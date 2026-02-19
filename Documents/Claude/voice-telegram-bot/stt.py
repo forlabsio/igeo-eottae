@@ -16,8 +16,10 @@ def load_model(model_name: str = "base") -> WhisperModel:
 
 def transcribe(audio_path: str) -> str:
     """Transcribe WAV file to Korean text. Deletes temp file after."""
-    model = load_model()
-    segments, _ = model.transcribe(audio_path, language="ko")
-    text = " ".join(segment.text.strip() for segment in segments)
-    os.unlink(audio_path)
-    return text.strip()
+    try:
+        model = load_model()
+        segments, _ = model.transcribe(audio_path, language="ko")
+        text = " ".join(segment.text.strip() for segment in segments)
+        return text.strip()
+    finally:
+        os.unlink(audio_path)
