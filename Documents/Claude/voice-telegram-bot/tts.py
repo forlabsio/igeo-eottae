@@ -1,6 +1,7 @@
 import os
 import tempfile
 import subprocess
+from contextlib import suppress
 from openai import OpenAI
 from config import OPENAI_API_KEY
 
@@ -33,5 +34,5 @@ def speak(text: str, voice: str = "nova") -> None:
         response.stream_to_file(tmp_path)
         subprocess.run(["afplay", tmp_path], check=True)
     finally:
-        if os.path.exists(tmp_path):
+        with suppress(FileNotFoundError):
             os.unlink(tmp_path)
