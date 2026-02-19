@@ -1,5 +1,5 @@
 openai>=1.0.0
-openai-whisper
+faster-whisper
 python-telegram-bot>=20.0
 pyaudio
 python-dotenv
