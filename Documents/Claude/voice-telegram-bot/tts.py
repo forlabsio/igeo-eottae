@@ -2,10 +2,11 @@ import os
 import tempfile
 import subprocess
 from contextlib import suppress
+from typing import Optional
 from openai import OpenAI
 from config import OPENAI_API_KEY
 
-_client: OpenAI | None = None
+_client: Optional[OpenAI] = None
 
 
 def _get_client() -> OpenAI:

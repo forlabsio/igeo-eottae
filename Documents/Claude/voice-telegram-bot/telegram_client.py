@@ -1,11 +1,12 @@
 import time
 import requests
+from typing import Optional
 from config import TELEGRAM_BOT_TOKEN, TELEGRAM_CLAUDE_CHAT_ID
 
 BASE_URL = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}"
 
 # Persisted across calls to avoid re-processing old updates
-_update_offset: int | None = None
+_update_offset: Optional[int] = None
 
 
 def send_message(text: str) -> int:
@@ -18,7 +19,7 @@ def send_message(text: str) -> int:
     return resp.json()["result"]["message_id"]
 
 
-def get_latest_reply(after_message_id: int, timeout: int = 30) -> str | None:
+def get_latest_reply(after_message_id: int, timeout: int = 30) -> Optional[str]:
     """
     Poll for the first bot reply after after_message_id.
     Only accepts messages from bots (is_bot=True).
