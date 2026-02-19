@@ -41,8 +41,9 @@ class Recorder:
         self._recording = False
         if self._thread:
             self._thread.join()
-        self._stream.stop_stream()
-        self._stream.close()
+        if self._stream:
+            self._stream.stop_stream()
+            self._stream.close()
 
         tmp = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
         with wave.open(tmp.name, 'wb') as wf:
