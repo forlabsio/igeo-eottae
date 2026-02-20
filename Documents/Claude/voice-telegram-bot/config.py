@@ -3,17 +3,20 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-TELEGRAM_CLAUDE_CHAT_ID = os.getenv("TELEGRAM_CLAUDE_CHAT_ID")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+API_ID = int(os.getenv("API_ID", "0"))
+API_HASH = os.getenv("API_HASH", "")
+TELEGRAM_BOT_USERNAME = os.getenv("TELEGRAM_BOT_USERNAME", "")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 
 
 def validate_config():
     missing = []
-    if not TELEGRAM_BOT_TOKEN:
-        missing.append("TELEGRAM_BOT_TOKEN")
-    if not TELEGRAM_CLAUDE_CHAT_ID:
-        missing.append("TELEGRAM_CLAUDE_CHAT_ID")
+    if not API_ID:
+        missing.append("API_ID")
+    if not API_HASH:
+        missing.append("API_HASH")
+    if not TELEGRAM_BOT_USERNAME:
+        missing.append("TELEGRAM_BOT_USERNAME")
     if not OPENAI_API_KEY:
         missing.append("OPENAI_API_KEY")
     if missing:
