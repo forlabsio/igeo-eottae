@@ -1,6 +1,7 @@
 import uuid
+import re
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 from fastapi.responses import PlainTextResponse, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -12,6 +13,25 @@ from app.tasks import run_business_validation
 from app.utils.report_parser import extract_executive_summary, calculate_validation_score
 
 router = APIRouter()
+
+_UUID_PATTERN = re.compile(
+    r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
+    re.IGNORECASE,
+)
+
+
+async def get_optional_user_id(
+    authorization: Optional[str] = Header(None)
+) -> Optional[str]:
+    """Extract user ID from Authorization header if present."""
+    if not authorization or not authorization.startswith("Bearer "):
+        return None
+    # In production, verify JWT here. For now, return a placeholder.
+    token = authorization.split(" ", 1)[1]
+    # Simple: use token as user_id if it looks like a UUID
+    if _UUID_PATTERN.match(token):
+        return token
+    return None
 
 
 async def _get_or_create_guest_user(db: AsyncSession) -> User:
@@ -26,12 +46,20 @@ async def _get_or_create_guest_user(db: AsyncSession) -> User:
 
 
 @router.post("/create", response_model=ReportStatus)
-async def create_report(body: ReportCreate, db: AsyncSession = Depends(get_db)):
+async def create_report(
+    body: ReportCreate,
+    db: AsyncSession = Depends(get_db),
+    auth_user_id: Optional[str] = Depends(get_optional_user_id),
+):
     """Create a new validation report and queue analysis"""
-    user = await _get_or_create_guest_user(db)
+    if auth_user_id:
+        resolved_user_id = uuid.UUID(auth_user_id)
+    else:
+        user = await _get_or_create_guest_user(db)
+        resolved_user_id = user.id
 
     report = Report(
-        user_id=user.id,
+        user_id=resolved_user_id,
         website_url=body.website_url,
         industry=body.industry,
         target_region=body.target_region,
