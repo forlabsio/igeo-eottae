@@ -16,6 +16,7 @@ from app.agents.report_gen import generate_report
 from app.agents.gap_analysis import analyze_content_gap
 from app.agents.market_research import estimate_market_size
 from app.agents.gbp_strategy import generate_gbp_strategy
+from app.utils.cache import get_cached_analysis, set_cached_analysis
 
 
 async def _update_progress(report_id: str, progress: int, status: str = "processing") -> None:
@@ -44,6 +45,30 @@ async def run_analysis(report_id: str) -> None:
         website_url = report.website_url
 
     try:
+        # Check cache before running full analysis
+        cached = get_cached_analysis(website_url, industry, region)
+        if cached and "markdown" in cached:
+            print(f"[Orchestrator] Cache hit for {website_url}, skipping analysis")
+            await _update_progress(report_id, 90, "processing")
+            async with AsyncSessionLocal() as db:
+                final = FinalReport(
+                    report_id=uuid.UUID(report_id),
+                    markdown_content=cached["markdown"],
+                )
+                db.add(final)
+
+                report = await db.get(Report, uuid.UUID(report_id))
+                if report:
+                    report.status = "completed"
+                    report.progress = 100
+                    report.completed_at = datetime.utcnow()
+
+                await db.commit()
+
+            await _update_progress(report_id, 100, "completed")
+            print(f"[Orchestrator] Report {report_id} completed from cache")
+            return
+
         # Step 1: Discover competitors (10%)
         await _update_progress(report_id, 10)
 
@@ -145,6 +170,9 @@ async def run_analysis(report_id: str) -> None:
         )
 
         await _update_progress(report_id, 90)
+
+        # Cache the generated markdown for future requests
+        set_cached_analysis(website_url, industry, region, {"markdown": markdown})
 
         # Step 5: Save final report (90% -> 100%)
         async with AsyncSessionLocal() as db:
