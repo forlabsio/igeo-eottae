@@ -34,3 +34,20 @@ class ReportPreview(BaseModel):
     status: str
     validation_score: Optional[Dict[str, Any]] = None
     executive_summary: Optional[str] = None
+
+
+class ReportListItem(BaseModel):
+    id: str
+    website_url: str
+    industry: str
+    target_region: str
+    status: str
+    tier: str
+    progress: int
+    created_at: Optional[str] = None
+    completed_at: Optional[str] = None
+
+
+class ReportList(BaseModel):
+    items: List[ReportListItem]
+    total: int

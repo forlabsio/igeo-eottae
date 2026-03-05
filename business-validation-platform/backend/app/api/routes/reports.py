@@ -8,7 +8,7 @@ from sqlalchemy import select
 
 from app.db import get_db
 from app.models.models import Report, User, FinalReport
-from app.schemas.schemas import ReportCreate, ReportStatus, ReportDownload, ReportPreview
+from app.schemas.schemas import ReportCreate, ReportStatus, ReportDownload, ReportPreview, ReportListItem, ReportList
 from app.tasks import run_business_validation
 from app.utils.report_parser import extract_executive_summary, calculate_validation_score
 
@@ -43,6 +43,48 @@ async def _get_or_create_guest_user(db: AsyncSession) -> User:
         await db.commit()
         await db.refresh(user)
     return user
+
+
+@router.get("/", response_model=ReportList)
+async def list_reports(
+    user_id: Optional[str] = None,
+    limit: int = 20,
+    offset: int = 0,
+    db: AsyncSession = Depends(get_db),
+):
+    """List reports, optionally filtered by user_id."""
+    from sqlalchemy import func
+
+    query = select(Report)
+    count_query = select(func.count(Report.id))
+
+    if user_id:
+        query = query.where(Report.user_id == user_id)
+        count_query = count_query.where(Report.user_id == user_id)
+
+    query = query.order_by(Report.created_at.desc()).limit(limit).offset(offset)
+
+    result = await db.execute(query)
+    count_result = await db.execute(count_query)
+
+    reports = result.scalars().all()
+    total = count_result.scalar() or 0
+
+    items = []
+    for r in reports:
+        items.append(ReportListItem(
+            id=str(r.id),
+            website_url=r.website_url,
+            industry=r.industry,
+            target_region=r.target_region,
+            status=r.status,
+            tier=r.tier,
+            progress=r.progress,
+            created_at=r.created_at.isoformat() if r.created_at else None,
+            completed_at=r.completed_at.isoformat() if r.completed_at else None,
+        ))
+
+    return ReportList(items=items, total=total)
 
 
 @router.post("/create", response_model=ReportStatus)
