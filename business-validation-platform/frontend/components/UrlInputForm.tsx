@@ -1,15 +1,5 @@
 "use client";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 
 const INDUSTRIES = [
@@ -19,24 +9,9 @@ const INDUSTRIES = [
 ];
 
 const TIERS = [
-  {
-    id: "basic",
-    name: "빠른 검증",
-    price: "₩99,000",
-    desc: "경쟁사 3개 · 20페이지",
-  },
-  {
-    id: "pro",
-    name: "심층 분석 ⭐",
-    price: "₩299,000",
-    desc: "경쟁사 10개 · 50페이지 + PDF",
-  },
-  {
-    id: "premium",
-    name: "전략+실행",
-    price: "₩999,000",
-    desc: "경쟁사 20개 · 100페이지",
-  },
+  { id: "basic", label: "Starter", price: "₩99,000", detail: "3개 경쟁사 · 20p" },
+  { id: "pro", label: "Pro", price: "₩299,000", detail: "10개 경쟁사 · 50p + PDF" },
+  { id: "premium", label: "Enterprise", price: "₩999,000", detail: "20개 경쟁사 · 100p" },
 ];
 
 export function UrlInputForm() {
@@ -54,120 +29,186 @@ export function UrlInputForm() {
       setError("웹사이트 URL과 업종을 입력해주세요.");
       return;
     }
-
     setLoading(true);
     setError(null);
-
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8200";
       const res = await fetch(`${apiUrl}/api/reports/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          website_url: url,
-          industry,
-          target_region: region || undefined,
-          tier,
-        }),
+        body: JSON.stringify({ website_url: url, industry, target_region: region || undefined, tier }),
       });
-
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error((err as { detail?: string }).detail || "보고서 생성 실패");
       }
-
       const data = await res.json();
       router.push(`/dashboard?id=${(data as { report_id: string }).report_id}`);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "오류가 발생했습니다. 다시 시도해주세요."
-      );
+      setError(err instanceof Error ? err.message : "오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
   };
 
+  const inputStyle = {
+    width: '100%',
+    background: 'rgba(255,255,255,0.03)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    color: '#EEEAE3',
+    padding: '11px 14px',
+    fontSize: '0.875rem',
+    outline: 'none',
+    transition: 'border-color 0.2s',
+    fontFamily: 'var(--font-sans)',
+  };
+
+  const labelStyle = {
+    display: 'block',
+    fontSize: '0.6875rem',
+    letterSpacing: '0.1em',
+    textTransform: 'uppercase' as const,
+    color: '#52535A',
+    marginBottom: '6px',
+    fontFamily: 'var(--font-mono)',
+  };
+
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-6 bg-white rounded-2xl p-8 shadow-xl max-w-2xl mx-auto"
-    >
-      <div className="space-y-2">
-        <Label htmlFor="url">웹사이트 URL *</Label>
-        <Input
-          id="url"
-          type="url"
-          placeholder="https://example.com"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          required
-          className="h-12"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label>업종 *</Label>
-        <Select onValueChange={setIndustry} required>
-          <SelectTrigger className="h-12">
-            <SelectValue placeholder="업종을 선택하세요" />
-          </SelectTrigger>
-          <SelectContent>
-            {INDUSTRIES.map((i) => (
-              <SelectItem key={i} value={i}>
-                {i}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="region">타겟 지역 (선택)</Label>
-        <Input
-          id="region"
-          placeholder="서울, 강남, 부산 등"
-          value={region}
-          onChange={(e) => setRegion(e.target.value)}
-          className="h-12"
-        />
-      </div>
-
-      <div className="space-y-3">
-        <Label>분석 패키지</Label>
-        <div className="grid grid-cols-3 gap-3">
-          {TIERS.map((t) => (
-            <div
-              key={t.id}
-              onClick={() => setTier(t.id)}
-              className={`cursor-pointer border-2 rounded-xl p-4 transition-all ${
-                tier === t.id
-                  ? "border-blue-600 bg-blue-50"
-                  : "border-gray-200 hover:border-blue-300"
-              }`}
-            >
-              <div className="font-semibold text-sm">{t.name}</div>
-              <div className="text-blue-600 font-bold mt-1">{t.price}</div>
-              <div className="text-xs text-gray-500 mt-1">{t.desc}</div>
-            </div>
-          ))}
+    <div id="form" style={{
+      background: '#14161C',
+      border: '1px solid rgba(201,169,110,0.2)',
+      padding: '2.5rem',
+      maxWidth: '640px',
+    }}>
+      {/* Form header */}
+      <div style={{ marginBottom: '2rem' }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6875rem', color: '#C9A96E', letterSpacing: '0.1em', marginBottom: '0.5rem' }}>
+          START ANALYSIS
         </div>
+        <div className="gold-rule" />
       </div>
 
-      {error && (
-        <p className="text-red-500 text-sm bg-red-50 p-3 rounded-lg">{error}</p>
-      )}
+      <form onSubmit={handleSubmit}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {/* URL Field */}
+          <div>
+            <label style={labelStyle}>Website URL *</label>
+            <input
+              type="url"
+              placeholder="https://yourcompany.com"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              required
+              style={inputStyle}
+              onFocus={(e) => { e.target.style.borderColor = 'rgba(201,169,110,0.5)'; }}
+              onBlur={(e) => { e.target.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+            />
+          </div>
 
-      <Button
-        type="submit"
-        className="w-full h-12 text-base font-semibold"
-        disabled={loading}
-      >
-        {loading ? "분석 요청 중..." : "🚀 24시간 내 검증 시작"}
-      </Button>
+          {/* Two columns: Industry + Region */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div>
+              <label style={labelStyle}>업종 *</label>
+              <select
+                value={industry}
+                onChange={(e) => setIndustry(e.target.value)}
+                required
+                style={{
+                  ...inputStyle,
+                  cursor: 'pointer',
+                  appearance: 'none' as const,
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23C9A96E'/%3E%3C/svg%3E")`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'right 12px center',
+                  paddingRight: '32px',
+                }}
+              >
+                <option value="" disabled style={{ background: '#14161C' }}>선택</option>
+                {INDUSTRIES.map((i) => (
+                  <option key={i} value={i} style={{ background: '#14161C' }}>{i}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>타겟 지역</label>
+              <input
+                type="text"
+                placeholder="서울, 강남, 부산 등"
+                value={region}
+                onChange={(e) => setRegion(e.target.value)}
+                style={inputStyle}
+                onFocus={(e) => { e.target.style.borderColor = 'rgba(201,169,110,0.5)'; }}
+                onBlur={(e) => { e.target.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+              />
+            </div>
+          </div>
 
-      <p className="text-center text-xs text-gray-400">
-        공개 데이터만 수집합니다. 개인정보 수집 없음.
-      </p>
-    </form>
+          {/* Tier Selection */}
+          <div>
+            <label style={labelStyle}>분석 패키지</label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+              {TIERS.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setTier(t.id)}
+                  style={{
+                    padding: '0.75rem',
+                    textAlign: 'left' as const,
+                    background: tier === t.id ? 'rgba(201,169,110,0.08)' : 'rgba(255,255,255,0.02)',
+                    border: tier === t.id ? '1px solid rgba(201,169,110,0.5)' : '1px solid rgba(255,255,255,0.07)',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.625rem', color: tier === t.id ? '#C9A96E' : '#52535A', letterSpacing: '0.08em', marginBottom: '4px' }}>
+                    {t.label.toUpperCase()}
+                  </div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.125rem', fontWeight: 600, color: '#EEEAE3', lineHeight: 1 }}>
+                    {t.price}
+                  </div>
+                  <div style={{ fontSize: '0.6875rem', color: '#9B9BA5', marginTop: '3px' }}>
+                    {t.detail}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Error */}
+          {error && (
+            <div style={{ fontSize: '0.8125rem', color: '#E05555', background: 'rgba(224,85,85,0.08)', border: '1px solid rgba(224,85,85,0.2)', padding: '10px 14px' }}>
+              {error}
+            </div>
+          )}
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              width: '100%',
+              padding: '13px',
+              background: loading ? 'rgba(201,169,110,0.5)' : '#C9A96E',
+              color: '#0B0C0F',
+              border: 'none',
+              fontSize: '0.8125rem',
+              fontWeight: 600,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase' as const,
+              cursor: loading ? 'not-allowed' : 'pointer',
+              transition: 'all 0.2s',
+              fontFamily: 'var(--font-sans)',
+            }}
+          >
+            {loading ? "분석 요청 중..." : "분석 시작하기 →"}
+          </button>
+
+          <p style={{ textAlign: 'center', fontSize: '0.6875rem', color: '#52535A', margin: 0 }}>
+            공개 데이터만 수집 · 개인정보 미취급
+          </p>
+        </div>
+      </form>
+    </div>
   );
 }
