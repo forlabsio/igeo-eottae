@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import PlainTextResponse, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -125,3 +125,26 @@ async def get_markdown(report_id: uuid.UUID, db: AsyncSession = Depends(get_db))
     if not final:
         raise HTTPException(status_code=404, detail="Report content not found")
     return PlainTextResponse(final.markdown_content, media_type="text/markdown")
+
+
+@router.get("/{report_id}/pdf")
+async def download_pdf(
+    report_id: str,
+    db: AsyncSession = Depends(get_db)
+):
+    """Generate and return PDF of the report."""
+    from app.utils.pdf_generator import generate_pdf_bytes
+
+    result = await db.execute(
+        select(FinalReport).where(FinalReport.report_id == report_id)
+    )
+    final_report = result.scalar_one_or_none()
+    if not final_report:
+        raise HTTPException(status_code=404, detail="Report not found or not completed")
+
+    pdf_bytes = generate_pdf_bytes(final_report.markdown_content)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=report-{report_id[:8]}.pdf"}
+    )
