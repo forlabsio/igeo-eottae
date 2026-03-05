@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from datetime import datetime
 import uuid
 
@@ -32,5 +32,5 @@ class ReportDownload(BaseModel):
 class ReportPreview(BaseModel):
     report_id: uuid.UUID
     status: str
-    validation_score: Optional[int] = None
+    validation_score: Optional[Dict[str, Any]] = None
     executive_summary: Optional[str] = None

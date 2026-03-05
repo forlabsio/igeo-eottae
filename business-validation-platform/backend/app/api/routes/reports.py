@@ -9,6 +9,7 @@ from app.db import get_db
 from app.models.models import Report, User, FinalReport
 from app.schemas.schemas import ReportCreate, ReportStatus, ReportDownload, ReportPreview
 from app.tasks import run_business_validation
+from app.utils.report_parser import extract_executive_summary, calculate_validation_score
 
 router = APIRouter()
 
@@ -75,29 +76,21 @@ async def preview_report(report_id: uuid.UUID, db: AsyncSession = Depends(get_db
         raise HTTPException(status_code=404, detail="Report not found")
 
     executive_summary = None
+    validation_score = None
     if report.status == "completed":
         result = await db.execute(
             select(FinalReport).where(FinalReport.report_id == report_id)
         )
         final = result.scalar_one_or_none()
         if final and final.markdown_content:
-            lines = final.markdown_content.split("\n")
-            summary_lines = []
-            in_summary = False
-            for line in lines:
-                if "Executive Summary" in line:
-                    in_summary = True
-                    continue
-                if in_summary and line.startswith("## "):
-                    break
-                if in_summary:
-                    summary_lines.append(line)
-            executive_summary = "\n".join(summary_lines[:20]).strip() or None
+            executive_summary = extract_executive_summary(final.markdown_content)
+            validation_score = calculate_validation_score(final.markdown_content)
 
     return ReportPreview(
         report_id=report_id,
         status=report.status,
         executive_summary=executive_summary,
+        validation_score=validation_score,
     )
 
 
