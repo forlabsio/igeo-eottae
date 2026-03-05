@@ -13,6 +13,9 @@ from app.agents.competitor import discover_competitors
 from app.agents.seo_audit import audit_website, compare_with_competitors
 from app.agents.keywords import generate_intent_keywords
 from app.agents.report_gen import generate_report
+from app.agents.gap_analysis import analyze_content_gap
+from app.agents.market_research import estimate_market_size
+from app.agents.gbp_strategy import generate_gbp_strategy
 
 
 async def _update_progress(report_id: str, progress: int, status: str = "processing") -> None:
@@ -79,6 +82,24 @@ async def run_analysis(report_id: str) -> None:
 
         keywords = generate_intent_keywords(industry, region)
 
+        # Run gap analysis, market research, and GBP strategy in parallel
+        competitors_data_simple = [{"url": url} for url in competitors[:5]]
+        gap_coro = analyze_content_gap(website_url, competitors[:5])
+        market_coro = estimate_market_size(industry, region)
+        gbp_coro = generate_gbp_strategy(industry, region, competitors_data_simple)
+
+        gap_results, market_data, gbp_data = await asyncio.gather(
+            gap_coro, market_coro, gbp_coro, return_exceptions=True
+        )
+
+        # Normalize results in case of exceptions
+        if isinstance(gap_results, Exception):
+            gap_results = []
+        if isinstance(market_data, Exception):
+            market_data = {"industry": industry, "region": region}
+        if isinstance(gbp_data, Exception):
+            gbp_data = {}
+
         await _update_progress(report_id, 50)
 
         # Step 3: SEO comparison
@@ -119,8 +140,8 @@ async def run_analysis(report_id: str) -> None:
             competitors=competitors_data,
             seo_comparison=seo_comparison,
             keywords=keywords[:20],
-            content_gaps=[],
-            market_data={"industry": industry, "region": region},
+            content_gaps=gap_results if isinstance(gap_results, list) else [],
+            market_data=market_data if isinstance(market_data, dict) else {"industry": industry, "region": region},
         )
 
         await _update_progress(report_id, 90)
