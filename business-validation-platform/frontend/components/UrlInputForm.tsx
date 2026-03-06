@@ -9,9 +9,8 @@ const INDUSTRIES = [
 ];
 
 const TIERS = [
-  { id: "basic", label: "Starter", price: "₩99,000", detail: "3개 경쟁사 · 20p" },
-  { id: "pro", label: "Pro", price: "₩299,000", detail: "10개 경쟁사 · 50p + PDF" },
-  { id: "premium", label: "Enterprise", price: "₩999,000", detail: "20개 경쟁사 · 100p" },
+  { id: "basic", label: "Starter", price: "₩99,000", detail: "10개 경쟁사 · 6섹션 보고서" },
+  { id: "pro", label: "Pro", price: "₩299,000", detail: "20개 경쟁사 · 8섹션 + 로드맵" },
 ];
 
 export function UrlInputForm() {
@@ -170,7 +169,7 @@ export function UrlInputForm() {
           {/* Tier Selection */}
           <div>
             <label style={labelStyle}>분석 패키지</label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
               {TIERS.map((t) => (
                 <button
                   key={t.id}

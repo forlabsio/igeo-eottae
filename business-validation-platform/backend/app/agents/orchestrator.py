@@ -72,8 +72,8 @@ async def run_analysis(report_id: str) -> None:
         # Step 1: Discover competitors (10%)
         await _update_progress(report_id, 10)
 
-        tier_limits = {"basic": 3, "pro": 10, "premium": 20}
-        max_competitors = tier_limits.get(tier, 3)
+        tier_limits = {"basic": 10, "pro": 20}
+        max_competitors = tier_limits.get(tier, 10)
 
         competitors = await discover_competitors(
             industry=industry,
@@ -174,14 +174,18 @@ async def run_analysis(report_id: str) -> None:
             for url, audit in zip(competitors, competitor_audits)
         ]
 
+        keyword_limit = 50 if tier == "pro" else 30
+        gap_limit = 20 if tier == "pro" else 10
+
         markdown = await generate_report(
             website_url=website_url,
             industry=industry,
             region=region,
+            tier=tier,
             competitors=competitors_data,
             seo_comparison=seo_comparison,
-            keywords=keywords[:20],
-            content_gaps=gap_results if isinstance(gap_results, list) else [],
+            keywords=keywords[:keyword_limit],
+            content_gaps=(gap_results if isinstance(gap_results, list) else [])[:gap_limit],
             market_data=market_data if isinstance(market_data, dict) else {"industry": industry, "region": region},
             business_plan_context=business_plan_context,
         )
