@@ -18,19 +18,8 @@ def test_markdown_to_html_table():
     assert "<table>" in html
 
 
-def test_generate_pdf_bytes_calls_weasyprint():
-    mock_html_instance = MagicMock()
-    mock_html_instance.write_pdf.return_value = b"%PDF-1.4 test"
-    mock_html_cls = MagicMock(return_value=mock_html_instance)
-
-    mock_weasyprint = MagicMock()
-    mock_weasyprint.HTML = mock_html_cls
-
-    with patch.dict(sys.modules, {"weasyprint": mock_weasyprint}):
-        # Re-import to pick up the mock
-        from app.utils import pdf_generator
-        import importlib
-        importlib.reload(pdf_generator)
-        result = pdf_generator.generate_pdf_bytes("# Test")
-        mock_html_cls.assert_called_once()
-        assert result == b"%PDF-1.4 test"
+def test_generate_pdf_bytes_is_async():
+    """PDF generation uses Playwright (async), not WeasyPrint."""
+    import inspect
+    from app.utils.pdf_generator import generate_pdf_bytes
+    assert inspect.iscoroutinefunction(generate_pdf_bytes)

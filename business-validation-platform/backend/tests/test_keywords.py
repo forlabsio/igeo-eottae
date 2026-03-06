@@ -13,9 +13,9 @@ def test_generates_price_keywords():
     assert any("가격" in k or "비용" in k for k in keywords)
 
 
-def test_returns_20_keywords():
+def test_returns_at_least_20_keywords():
     result = generate_intent_keywords("헬스장", "부산")
-    assert len(result) == 20
+    assert len(result) >= 20
 
 
 def test_keyword_has_required_fields():

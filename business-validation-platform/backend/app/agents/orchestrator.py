@@ -11,11 +11,12 @@ from app.models.models import (
 )
 from app.agents.competitor import discover_competitors
 from app.agents.seo_audit import audit_website, compare_with_competitors
-from app.agents.keywords import generate_intent_keywords
+from app.agents.keywords import generate_intent_keywords, generate_keywords_with_suggestions
 from app.agents.report_gen import generate_report
 from app.agents.gap_analysis import analyze_content_gap
 from app.agents.market_research import estimate_market_size
 from app.agents.gbp_strategy import generate_gbp_strategy
+from app.agents.financial_modeling import generate_financial_scenarios
 from app.utils.cache import get_cached_analysis, set_cached_analysis
 
 
@@ -45,8 +46,8 @@ async def run_analysis(report_id: str) -> None:
         website_url = report.website_url
 
     try:
-        # Check cache before running full analysis
-        cached = get_cached_analysis(website_url, industry, region)
+        # Check cache before running full analysis (tier-aware)
+        cached = get_cached_analysis(website_url, industry, region, tier)
         if cached and "markdown" in cached:
             print(f"[Orchestrator] Cache hit for {website_url}, skipping analysis")
             await _update_progress(report_id, 90, "processing")
@@ -90,47 +91,49 @@ async def run_analysis(report_id: str) -> None:
 
         await _update_progress(report_id, 20)
 
-        # Step 2: Parallel analysis (20% -> 70%)
+        # Step 2: Parallel analysis — SEO audits + keywords + gap + market + GBP + financial
         our_audit_coro = audit_website(website_url)
         competitor_audit_coros = [audit_website(url) for url in competitors[:5]]
 
-        all_audits = await asyncio.gather(
-            our_audit_coro,
-            *competitor_audit_coros,
-            return_exceptions=True,
-        )
+        keyword_count = 50 if tier == "pro" else 30
+        keywords_coro = generate_keywords_with_suggestions(industry, region, target_count=keyword_count)
 
-        our_audit = all_audits[0] if not isinstance(all_audits[0], Exception) else {"schema_count": 0, "schema_types": []}
-        competitor_audits = [
-            a for a in all_audits[1:] if not isinstance(a, Exception)
-        ]
-
-        keywords = generate_intent_keywords(industry, region)
-
-        # Run gap analysis, market research, and GBP strategy in parallel
         competitors_data_simple = [{"url": url} for url in competitors[:5]]
         gap_coro = analyze_content_gap(website_url, competitors[:5])
         market_coro = estimate_market_size(industry, region)
         gbp_coro = generate_gbp_strategy(industry, region, competitors_data_simple)
+        financial_coro = generate_financial_scenarios(industry, region, competitors_data_simple)
 
-        gap_results, market_data, gbp_data = await asyncio.gather(
-            gap_coro, market_coro, gbp_coro, return_exceptions=True
+        all_results = await asyncio.gather(
+            our_audit_coro,
+            *competitor_audit_coros,
+            keywords_coro,
+            gap_coro,
+            market_coro,
+            gbp_coro,
+            financial_coro,
+            return_exceptions=True,
         )
 
-        # Normalize results in case of exceptions
-        if isinstance(gap_results, Exception):
-            gap_results = []
-        if isinstance(market_data, Exception):
-            market_data = {"industry": industry, "region": region}
-        if isinstance(gbp_data, Exception):
-            gbp_data = {}
+        num_audits = 1 + len(competitors[:5])
+        our_audit = all_results[0] if not isinstance(all_results[0], Exception) else {"schema_count": 0, "schema_types": []}
+        competitor_audits = [
+            a for a in all_results[1:num_audits] if not isinstance(a, Exception)
+        ]
+
+        idx = num_audits
+        keywords = all_results[idx] if not isinstance(all_results[idx], Exception) else generate_intent_keywords(industry, region)
+        gap_results = all_results[idx + 1] if not isinstance(all_results[idx + 1], Exception) else []
+        market_data = all_results[idx + 2] if not isinstance(all_results[idx + 2], Exception) else {"industry": industry, "region": region}
+        gbp_data = all_results[idx + 3] if not isinstance(all_results[idx + 3], Exception) else {}
+        financial_model = all_results[idx + 4] if not isinstance(all_results[idx + 4], Exception) else None
 
         await _update_progress(report_id, 50)
 
         # Step 3: SEO comparison
         seo_comparison = compare_with_competitors(our_audit, competitor_audits)
 
-        # Save SEO audit to DB
+        # Save SEO audit + keywords to DB
         async with AsyncSessionLocal() as db:
             seo = SEOAudit(
                 report_id=uuid.UUID(report_id),
@@ -139,8 +142,7 @@ async def run_analysis(report_id: str) -> None:
             )
             db.add(seo)
 
-            # Save keywords to DB
-            for kw in keywords[:20]:
+            for kw in (keywords or [])[:20]:
                 keyword = Keyword(
                     report_id=uuid.UUID(report_id),
                     keyword=kw["keyword"],
@@ -174,7 +176,6 @@ async def run_analysis(report_id: str) -> None:
             for url, audit in zip(competitors, competitor_audits)
         ]
 
-        keyword_limit = 50 if tier == "pro" else 30
         gap_limit = 20 if tier == "pro" else 10
 
         markdown = await generate_report(
@@ -184,16 +185,17 @@ async def run_analysis(report_id: str) -> None:
             tier=tier,
             competitors=competitors_data,
             seo_comparison=seo_comparison,
-            keywords=keywords[:keyword_limit],
+            keywords=(keywords or [])[:keyword_count],
             content_gaps=(gap_results if isinstance(gap_results, list) else [])[:gap_limit],
             market_data=market_data if isinstance(market_data, dict) else {"industry": industry, "region": region},
+            financial_model=financial_model,
             business_plan_context=business_plan_context,
         )
 
         await _update_progress(report_id, 90)
 
-        # Cache the generated markdown for future requests
-        set_cached_analysis(website_url, industry, region, {"markdown": markdown})
+        # Cache the generated markdown for future requests (tier-aware)
+        set_cached_analysis(website_url, industry, region, {"markdown": markdown}, tier=tier)
 
         # Step 5: Save final report (90% -> 100%)
         async with AsyncSessionLocal() as db:

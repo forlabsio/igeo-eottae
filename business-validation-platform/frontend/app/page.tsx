@@ -246,7 +246,7 @@ export default function Home() {
             숨겨진 비용 없음. 필요한 만큼만 선택하세요.
           </p>
 
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
             {TIERS.map((tier) => (
               <div key={tier.id} style={{
                 background: tier.highlighted ? 'rgba(201,169,110,0.06)' : '#14161C',

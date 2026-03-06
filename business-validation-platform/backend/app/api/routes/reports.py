@@ -151,7 +151,7 @@ async def preview_report(report_id: uuid.UUID, db: AsyncSession = Depends(get_db
     validation_score = None
     if report.status == "completed":
         result = await db.execute(
-            select(FinalReport).where(FinalReport.report_id == report_id)
+            select(FinalReport).where(FinalReport.report_id == report_id).order_by(FinalReport.created_at.desc()).limit(1)
         )
         final = result.scalar_one_or_none()
         if final and final.markdown_content:
@@ -184,7 +184,7 @@ async def download_report(report_id: uuid.UUID, db: AsyncSession = Depends(get_d
 @router.get("/{report_id}/markdown")
 async def get_markdown(report_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
     result = await db.execute(
-        select(FinalReport).where(FinalReport.report_id == report_id)
+        select(FinalReport).where(FinalReport.report_id == report_id).order_by(FinalReport.created_at.desc()).limit(1)
     )
     final = result.scalar_one_or_none()
     if not final:
@@ -276,13 +276,13 @@ async def download_pdf(
     from app.utils.pdf_generator import generate_pdf_bytes
 
     result = await db.execute(
-        select(FinalReport).where(FinalReport.report_id == report_id)
+        select(FinalReport).where(FinalReport.report_id == report_id).order_by(FinalReport.created_at.desc()).limit(1)
     )
     final_report = result.scalar_one_or_none()
     if not final_report:
         raise HTTPException(status_code=404, detail="Report not found or not completed")
 
-    pdf_bytes = generate_pdf_bytes(final_report.markdown_content)
+    pdf_bytes = await generate_pdf_bytes(final_report.markdown_content)
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",

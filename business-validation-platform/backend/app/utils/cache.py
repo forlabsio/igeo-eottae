@@ -16,19 +16,19 @@ def _get_redis_client():
         return None
 
 
-def _make_cache_key(website_url: str, industry: str, region: str) -> str:
-    """Create a cache key from analysis parameters."""
-    raw = f"{website_url.lower().strip()}:{industry}:{region}"
+def _make_cache_key(website_url: str, industry: str, region: str, tier: str = "basic") -> str:
+    """Create a cache key from analysis parameters (tier-aware)."""
+    raw = f"{website_url.lower().strip()}:{industry}:{region}:{tier}"
     return f"bizvalidation:analysis:{hashlib.md5(raw.encode()).hexdigest()}"
 
 
-def get_cached_analysis(website_url: str, industry: str, region: str) -> Optional[dict]:
+def get_cached_analysis(website_url: str, industry: str, region: str, tier: str = "basic") -> Optional[dict]:
     """Retrieve cached analysis result. Returns None if not found or Redis unavailable."""
     client = _get_redis_client()
     if not client:
         return None
     try:
-        key = _make_cache_key(website_url, industry, region)
+        key = _make_cache_key(website_url, industry, region, tier)
         data = client.get(key)
         if data:
             return json.loads(data)
@@ -39,27 +39,28 @@ def get_cached_analysis(website_url: str, industry: str, region: str) -> Optiona
 
 def set_cached_analysis(
     website_url: str, industry: str, region: str,
-    result: dict, ttl_seconds: int = 86400  # 24 hours
+    result: dict, ttl_seconds: int = 86400,  # 24 hours
+    tier: str = "basic",
 ) -> bool:
     """Cache analysis result. Returns True on success."""
     client = _get_redis_client()
     if not client:
         return False
     try:
-        key = _make_cache_key(website_url, industry, region)
+        key = _make_cache_key(website_url, industry, region, tier)
         client.setex(key, ttl_seconds, json.dumps(result))
         return True
     except Exception:
         return False
 
 
-def invalidate_cache(website_url: str, industry: str, region: str) -> bool:
+def invalidate_cache(website_url: str, industry: str, region: str, tier: str = "basic") -> bool:
     """Remove cached entry for given parameters."""
     client = _get_redis_client()
     if not client:
         return False
     try:
-        key = _make_cache_key(website_url, industry, region)
+        key = _make_cache_key(website_url, industry, region, tier)
         client.delete(key)
         return True
     except Exception:

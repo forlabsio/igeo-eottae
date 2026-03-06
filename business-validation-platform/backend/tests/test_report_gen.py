@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from app.agents.report_gen import generate_report, REPORT_SYSTEM_PROMPT
+from app.agents.report_gen import generate_report, STARTER_SYSTEM, PRO_SYSTEM
 
 
 @pytest.mark.asyncio
@@ -48,7 +48,7 @@ async def test_generate_report_calls_correct_model():
 
     call_kwargs = mock_client.messages.create.call_args
     assert call_kwargs.kwargs["model"] == "claude-haiku-4-5-20251001"
-    assert call_kwargs.kwargs["max_tokens"] == 8096
+    assert call_kwargs.kwargs["max_tokens"] == 4096
 
 
 @pytest.mark.asyncio
@@ -77,6 +77,8 @@ async def test_generate_report_includes_website_url_in_prompt():
 
 
 def test_system_prompt_contains_key_sections():
-    assert "Executive Summary" in REPORT_SYSTEM_PROMPT
-    assert "맥킨지" in REPORT_SYSTEM_PROMPT
-    assert "실행 로드맵" in REPORT_SYSTEM_PROMPT
+    assert "Executive Summary" in STARTER_SYSTEM
+    assert "McKinsey" in STARTER_SYSTEM
+    assert "실행 로드맵" in STARTER_SYSTEM
+    assert "Executive Summary" in PRO_SYSTEM
+    assert "Goldman Sachs" in PRO_SYSTEM

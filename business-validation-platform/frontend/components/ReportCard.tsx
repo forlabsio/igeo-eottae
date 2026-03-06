@@ -201,7 +201,7 @@ export function ReportCard({ reportId }: { reportId: string }) {
                   EXECUTIVE SUMMARY
                 </div>
                 <div style={{ borderLeft: '2px solid rgba(201,169,110,0.3)', paddingLeft: '1rem' }}>
-                  <p style={{ fontSize: '0.875rem', color: '#9B9BA5', lineHeight: 1.7, whiteSpace: 'pre-wrap', maxHeight: '200px', overflow: 'hidden' }}>
+                  <p style={{ fontSize: '0.875rem', color: '#9B9BA5', lineHeight: 1.7, whiteSpace: 'pre-wrap', maxHeight: '300px', overflow: 'auto' }}>
                     {preview.executive_summary}
                   </p>
                 </div>
