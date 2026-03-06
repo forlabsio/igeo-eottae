@@ -51,3 +51,11 @@ class ReportListItem(BaseModel):
 class ReportList(BaseModel):
     items: List[ReportListItem]
     total: int
+
+
+class BusinessPlanUploadResponse(BaseModel):
+    report_id: str
+    filename: str
+    file_type: str
+    completeness_score: Optional[int] = None
+    analysis_summary: Optional[str] = None

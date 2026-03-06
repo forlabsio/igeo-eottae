@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 const INDUSTRIES = [
@@ -16,14 +16,17 @@ const TIERS = [
 
 export function UrlInputForm() {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [url, setUrl] = useState("");
   const [industry, setIndustry] = useState("");
   const [region, setRegion] = useState("");
   const [tier, setTier] = useState("basic");
+  const [planFile, setPlanFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState("분석 요청 중...");
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (!url || !industry) {
       setError("웹사이트 URL과 업종을 입력해주세요.");
@@ -33,6 +36,9 @@ export function UrlInputForm() {
     setError(null);
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8200";
+
+      // Step 1: Create report
+      setLoadingText("분석 요청 중...");
       const res = await fetch(`${apiUrl}/api/reports/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -42,8 +48,26 @@ export function UrlInputForm() {
         const err = await res.json().catch(() => ({}));
         throw new Error((err as { detail?: string }).detail || "보고서 생성 실패");
       }
-      const data = await res.json();
-      router.push(`/dashboard?id=${(data as { report_id: string }).report_id}`);
+      const data = await res.json() as { report_id: string };
+      const reportId = data.report_id;
+
+      // Step 2: Upload business plan if provided (non-fatal)
+      if (planFile) {
+        setLoadingText("사업계획서 분석 중...");
+        try {
+          const formData = new FormData();
+          formData.append("file", planFile);
+          await fetch(`${apiUrl}/api/reports/${reportId}/upload-plan`, {
+            method: "POST",
+            body: formData,
+          });
+        } catch {
+          // Non-fatal: warn in console, continue to dashboard
+          console.warn("사업계획서 업로드 실패, 대시보드로 계속 진행합니다.");
+        }
+      }
+
+      router.push(`/dashboard?id=${reportId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "오류가 발생했습니다.");
     } finally {
@@ -175,6 +199,57 @@ export function UrlInputForm() {
             </div>
           </div>
 
+          {/* Business Plan Upload */}
+          <div>
+            <label style={labelStyle}>사업계획서 첨부 <span style={{ color: '#52535A', fontWeight: 400 }}>(선택)</span></label>
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              style={{
+                width: '100%',
+                padding: '16px 14px',
+                border: planFile ? '1px solid rgba(201,169,110,0.5)' : '1px dashed rgba(255,255,255,0.15)',
+                background: planFile ? 'rgba(201,169,110,0.05)' : 'rgba(255,255,255,0.02)',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}
+            >
+              <span style={{ fontSize: '1rem', color: planFile ? '#C9A96E' : '#52535A' }}>
+                {planFile ? '📄' : '＋'}
+              </span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: planFile ? '#C9A96E' : '#52535A' }}>
+                {planFile ? planFile.name : 'PDF · DOCX · MD · TXT (최대 10MB)'}
+              </span>
+              {planFile && (
+                <button
+                  type="button"
+                  onClick={(ev) => { ev.stopPropagation(); setPlanFile(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+                  style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#52535A', cursor: 'pointer', fontSize: '1rem', padding: 0 }}
+                  aria-label="파일 제거"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.docx,.md,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/markdown,text/plain"
+              style={{ display: 'none' }}
+              onChange={(e) => {
+                const f = e.target.files?.[0] ?? null;
+                setPlanFile(f);
+              }}
+            />
+            {planFile && (
+              <p style={{ fontSize: '0.6875rem', color: '#52535A', margin: '6px 0 0', fontFamily: 'var(--font-mono)' }}>
+                AI가 SWOT · 시장 타당성 · 완성도 점수 · 실행 가능성을 분석합니다
+              </p>
+            )}
+          </div>
+
           {/* Error */}
           {error && (
             <div style={{ fontSize: '0.8125rem', color: '#E05555', background: 'rgba(224,85,85,0.08)', border: '1px solid rgba(224,85,85,0.2)', padding: '10px 14px' }}>
@@ -201,7 +276,7 @@ export function UrlInputForm() {
               fontFamily: 'var(--font-sans)',
             }}
           >
-            {loading ? "분석 요청 중..." : "분석 시작하기 →"}
+            {loading ? loadingText : "분석 시작하기 →"}
           </button>
 
           <p style={{ textAlign: 'center', fontSize: '0.6875rem', color: '#52535A', margin: 0 }}>

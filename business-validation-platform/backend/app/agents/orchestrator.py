@@ -7,7 +7,7 @@ from sqlalchemy import select
 
 from app.db import AsyncSessionLocal
 from app.models.models import (
-    Report, Competitor, Keyword, SEOAudit, FinalReport
+    Report, Competitor, Keyword, SEOAudit, FinalReport, BusinessPlanDocument
 )
 from app.agents.competitor import discover_competitors
 from app.agents.seo_audit import audit_website, compare_with_competitors
@@ -152,6 +152,22 @@ async def run_analysis(report_id: str) -> None:
 
         await _update_progress(report_id, 70)
 
+        # Load business plan context if available
+        business_plan_context = None
+        async with AsyncSessionLocal() as db:
+            bp_result = await db.execute(
+                select(BusinessPlanDocument).where(
+                    BusinessPlanDocument.report_id == uuid.UUID(report_id)
+                )
+            )
+            bp_doc = bp_result.scalar_one_or_none()
+            if bp_doc and bp_doc.analysis_json:
+                import json
+                try:
+                    business_plan_context = json.loads(bp_doc.analysis_json)
+                except Exception:
+                    pass
+
         # Step 4: Generate report (70% -> 90%)
         competitors_data = [
             {"url": url, "audit": audit}
@@ -167,6 +183,7 @@ async def run_analysis(report_id: str) -> None:
             keywords=keywords[:20],
             content_gaps=gap_results if isinstance(gap_results, list) else [],
             market_data=market_data if isinstance(market_data, dict) else {"industry": industry, "region": region},
+            business_plan_context=business_plan_context,
         )
 
         await _update_progress(report_id, 90)

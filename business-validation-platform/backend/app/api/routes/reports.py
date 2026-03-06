@@ -1,16 +1,18 @@
 import uuid
+import json
 import re
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi import APIRouter, Depends, HTTPException, Header, UploadFile, File
 from fastapi.responses import PlainTextResponse, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.db import get_db
-from app.models.models import Report, User, FinalReport
-from app.schemas.schemas import ReportCreate, ReportStatus, ReportDownload, ReportPreview, ReportListItem, ReportList
+from app.models.models import Report, User, FinalReport, BusinessPlanDocument
+from app.schemas.schemas import ReportCreate, ReportStatus, ReportDownload, ReportPreview, ReportListItem, ReportList, BusinessPlanUploadResponse
 from app.tasks import run_business_validation
 from app.utils.report_parser import extract_executive_summary, calculate_validation_score
+from app.utils.doc_parser import detect_file_type, extract_text, DocParseError
 
 router = APIRouter()
 
@@ -188,6 +190,81 @@ async def get_markdown(report_id: uuid.UUID, db: AsyncSession = Depends(get_db))
     if not final:
         raise HTTPException(status_code=404, detail="Report content not found")
     return PlainTextResponse(final.markdown_content, media_type="text/markdown")
+
+
+@router.post("/{report_id}/upload-plan", response_model=BusinessPlanUploadResponse)
+async def upload_business_plan(
+    report_id: uuid.UUID,
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+):
+    """Upload a business plan document and run AI analysis on it."""
+    from app.agents.business_plan_analyzer import analyze_business_plan
+
+    # 1. Confirm report exists
+    report = await db.get(Report, report_id)
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found")
+
+    # 2. Detect file type
+    try:
+        file_type = detect_file_type(file.filename or "", file.content_type or "")
+    except DocParseError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
+    # 3. Read file bytes
+    raw_bytes = await file.read()
+
+    # 4. Extract text
+    try:
+        extracted_text = extract_text(raw_bytes, file_type)
+    except DocParseError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
+    # 5. AI analysis (non-fatal — continue even if it fails)
+    analysis: dict = {}
+    completeness_score = None
+    analysis_summary = None
+    try:
+        analysis = await analyze_business_plan(
+            extracted_text,
+            industry=report.industry or "",
+            region=report.target_region or "",
+        )
+        completeness_score = analysis.get("completeness_score")
+        exec_summary = analysis.get("execution_feasibility", {}).get("summary", "")
+        market_summary = analysis.get("market_validity", {}).get("summary", "")
+        analysis_summary = exec_summary or market_summary or None
+    except Exception:
+        pass  # Non-fatal: proceed without analysis
+
+    # 6. Delete existing document (idempotent re-upload)
+    existing = await db.execute(
+        select(BusinessPlanDocument).where(BusinessPlanDocument.report_id == report_id)
+    )
+    existing_doc = existing.scalar_one_or_none()
+    if existing_doc:
+        await db.delete(existing_doc)
+        await db.flush()
+
+    # 7. Save to DB
+    doc = BusinessPlanDocument(
+        report_id=report_id,
+        filename=file.filename or "upload",
+        file_type=file_type,
+        extracted_text=extracted_text,
+        analysis_json=json.dumps(analysis, ensure_ascii=False) if analysis else None,
+    )
+    db.add(doc)
+    await db.commit()
+
+    return BusinessPlanUploadResponse(
+        report_id=str(report_id),
+        filename=file.filename or "upload",
+        file_type=file_type,
+        completeness_score=completeness_score,
+        analysis_summary=analysis_summary,
+    )
 
 
 @router.get("/{report_id}/pdf")

@@ -95,3 +95,14 @@ class FinalReport(Base):
     pdf_url = Column(String(500), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     report = relationship("Report", back_populates="final_reports")
+
+class BusinessPlanDocument(Base):
+    __tablename__ = "business_plan_documents"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    report_id = Column(UUID(as_uuid=True), ForeignKey("reports.id"), nullable=False, unique=True)
+    filename = Column(Text, nullable=False)
+    file_type = Column(String(10), nullable=False)  # pdf|docx|md|txt
+    extracted_text = Column(Text, nullable=False)
+    analysis_json = Column(Text, nullable=True)     # JSON: SWOT + scores
+    created_at = Column(DateTime, default=datetime.utcnow)
+    report = relationship("Report", backref="business_plan_document", uselist=False)
