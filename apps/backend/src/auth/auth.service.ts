@@ -49,8 +49,12 @@ export class AuthService {
     }
     const user = await this.userRepo.findOneBy({ id: record.userId });
     if (!user) throw new UnauthorizedException('사용자를 찾을 수 없습니다.');
-    const accessToken = this.signAccess(user);
-    return { accessToken };
+
+    // Delete old refresh token (rotation)
+    await this.tokenRepo.delete({ token });
+
+    // Generate new tokens
+    return this.generateTokens(user);
   }
 
   async logout(token: string) {
