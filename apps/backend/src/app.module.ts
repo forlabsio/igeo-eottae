@@ -8,6 +8,7 @@ import { Like } from './entities/like.entity';
 import { Bookmark } from './entities/bookmark.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { AuthModule } from './auth/auth.module';
+import { ServicesModule } from './services/services.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AuthModule } from './auth/auth.module';
       }),
     }),
     AuthModule,
+    ServicesModule,
   ],
 })
 export class AppModule {}
