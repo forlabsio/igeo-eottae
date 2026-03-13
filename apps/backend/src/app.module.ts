@@ -21,7 +21,7 @@ import { AdminModule } from './admin/admin.module';
         type: 'postgres',
         url: config.get('DATABASE_URL'),
         entities: [User, Category, Service, Like, Bookmark, RefreshToken],
-        synchronize: config.get('NODE_ENV') !== 'production',
+        synchronize: config.get('NODE_ENV') !== 'production' || config.get('TYPEORM_SYNC') === 'true',
         logging: config.get('NODE_ENV') === 'development',
       }),
     }),
