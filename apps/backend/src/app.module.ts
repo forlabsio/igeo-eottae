@@ -9,6 +9,8 @@ import { Bookmark } from './entities/bookmark.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { AuthModule } from './auth/auth.module';
 import { ServicesModule } from './services/services.module';
+import { UsersModule } from './users/users.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { ServicesModule } from './services/services.module';
     }),
     AuthModule,
     ServicesModule,
+    UsersModule,
+    AdminModule,
   ],
 })
 export class AppModule {}
