@@ -7,6 +7,7 @@ import { Service } from './entities/service.entity';
 import { Like } from './entities/like.entity';
 import { Bookmark } from './entities/bookmark.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { RefreshToken } from './entities/refresh-token.entity';
         logging: config.get('NODE_ENV') === 'development',
       }),
     }),
+    AuthModule,
   ],
 })
 export class AppModule {}
