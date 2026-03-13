@@ -1,10 +1,26 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Category } from './entities/category.entity';
+import { Service } from './entities/service.entity';
+import { Like } from './entities/like.entity';
+import { Bookmark } from './entities/bookmark.entity';
+import { RefreshToken } from './entities/refresh-token.entity';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'postgres',
+        url: config.get('DATABASE_URL'),
+        entities: [User, Category, Service, Like, Bookmark, RefreshToken],
+        synchronize: config.get('NODE_ENV') !== 'production',
+        logging: config.get('NODE_ENV') === 'development',
+      }),
+    }),
+  ],
 })
 export class AppModule {}
