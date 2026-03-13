@@ -3,6 +3,7 @@
   "build": { "builder": "NIXPACKS" },
   "deploy": {
     "startCommand": "node .next/standalone/apps/frontend/server.js",
-    "healthcheckPath": "/"
+    "healthcheckPath": "/",
+    "restartPolicyType": "ON_FAILURE"
   }
 }
