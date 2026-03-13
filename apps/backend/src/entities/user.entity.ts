@@ -18,7 +18,7 @@ export class User {
   @Column({ unique: true, length: 50 })
   nickname: string;
 
-  @Column({ default: 'user' })
+  @Column({ type: 'enum', enum: ['user', 'admin'], default: 'user' })
   role: 'user' | 'admin';
 
   @Column({ default: false })

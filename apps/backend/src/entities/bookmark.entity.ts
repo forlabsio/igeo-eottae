@@ -8,13 +8,13 @@ export class Bookmark {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (u) => u.bookmarks, { onDelete: 'CASCADE' })
   user: User;
 
   @Column()
   userId: string;
 
-  @ManyToOne(() => Service, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Service, (s) => s.bookmarks, { onDelete: 'CASCADE' })
   service: Service;
 
   @Column()
