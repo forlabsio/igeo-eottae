@@ -22,7 +22,7 @@ export class InquiriesService {
 
     const inquiry = this.repo.create({ senderId, receiverId: service.userId, serviceId: dto.serviceId, title: dto.title, message: dto.message });
     const saved = await this.repo.save(inquiry);
-    return this.toDto(saved, userId);
+    return this.toDto(saved, senderId);
   }
 
   async getReceived(userId: string) {
