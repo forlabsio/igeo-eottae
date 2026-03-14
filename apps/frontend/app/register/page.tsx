@@ -18,6 +18,7 @@ export default function RegisterPage() {
       const { data } = await api.post('/auth/register', form);
       localStorage.setItem('accessToken', data.accessToken);
       localStorage.setItem('refreshToken', data.refreshToken);
+      document.cookie = `accessToken=${data.accessToken}; path=/; max-age=604800; SameSite=Strict`;
       const { data: me } = await api.get('/users/me');
       setUser(me);
       router.push('/');

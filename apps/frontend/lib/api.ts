@@ -24,6 +24,7 @@ api.interceptors.response.use(
             { refreshToken }
           );
           localStorage.setItem('accessToken', data.accessToken);
+          document.cookie = `accessToken=${data.accessToken}; path=/; max-age=604800; SameSite=Strict`;
           if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
           err.config.headers.Authorization = `Bearer ${data.accessToken}`;
           return api.request(err.config);

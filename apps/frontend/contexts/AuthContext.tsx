@@ -40,6 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await api.post('/auth/logout', { refreshToken }).catch(() => {});
     }
     localStorage.removeItem('accessToken');
+    document.cookie = 'accessToken=; path=/; max-age=0';
     localStorage.removeItem('refreshToken');
     setUser(null);
     window.location.href = '/';
