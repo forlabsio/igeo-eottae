@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import ServiceCard from '@/components/ServiceCard';
-import { ArrowRight, Zap, Users, TrendingUp, Plus } from 'lucide-react';
+import { ArrowRight, Zap, Plus } from 'lucide-react';
 
 interface ServiceItem {
   id: string; name: string; description: string; url: string; imageUrl?: string;
@@ -32,9 +32,7 @@ export default async function HomePage() {
           style={{ backgroundImage: 'repeating-linear-gradient(0deg,#1A1918 0,#1A1918 1px,transparent 1px,transparent 40px),repeating-linear-gradient(90deg,#1A1918 0,#1A1918 1px,transparent 1px,transparent 40px)' }} />
 
         <div className="max-w-[1120px] mx-auto px-8 py-16 relative">
-          <div className="flex flex-col lg:flex-row lg:items-center gap-10">
-            {/* Left copy */}
-            <div className="flex-1 flex flex-col gap-5 max-w-[560px]">
+          <div className="flex flex-col gap-5 max-w-[560px]">
               <span className="inline-flex items-center gap-1.5 bg-accent-green text-black text-[11px] font-extrabold px-3 py-1.5 rounded-full tracking-widest w-fit">
                 <Zap size={11} /> KOREAN MAKERS PLATFORM
               </span>
@@ -61,25 +59,6 @@ export default async function HomePage() {
                   <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
                 </Link>
               </div>
-            </div>
-
-            {/* Right stats cards */}
-            <div className="flex gap-3 lg:flex-col lg:w-[200px]">
-              <div className="flex-1 bg-bg border border-border rounded-2xl p-4 flex flex-col gap-1.5">
-                <div className="w-8 h-8 bg-accent-green/20 rounded-xl flex items-center justify-center">
-                  <TrendingUp size={15} className="text-[#5c7a00]" />
-                </div>
-                <p className="text-[24px] font-extrabold text-text-primary leading-none mt-1">+{services.length}</p>
-                <p className="text-[12px] text-text-secondary font-medium">이번주 인기 서비스</p>
-              </div>
-              <div className="flex-1 bg-[#1A1918] rounded-2xl p-4 flex flex-col gap-1.5">
-                <div className="w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center">
-                  <Users size={15} className="text-accent-green" />
-                </div>
-                <p className="text-[24px] font-extrabold text-white leading-none mt-1">메이커</p>
-                <p className="text-[12px] text-white/50 font-medium">커뮤니티에 참여하세요</p>
-              </div>
-            </div>
           </div>
         </div>
       </div>
