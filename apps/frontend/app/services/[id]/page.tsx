@@ -33,47 +33,74 @@ export default function ServiceDetailPage() {
     }
   };
 
-  if (!service) return <div className="p-8 text-text-secondary">로딩 중...</div>;
+  if (!service) {
+    return (
+      <div className="max-w-[780px] mx-auto px-8 py-12 text-text-secondary text-[14px]">
+        로딩 중...
+      </div>
+    );
+  }
+
+  const initials = service.name.slice(0, 2).toUpperCase();
+  const hues = ['bg-[#E8F5D4]', 'bg-[#D4EAF5]', 'bg-[#F5E8D4]', 'bg-[#EED4F5]', 'bg-[#F5D4D4]'];
+  const colorIdx = service.name.charCodeAt(0) % hues.length;
 
   return (
-    <div className="max-w-3xl mx-auto px-8 py-10">
-      <div className="bg-white border border-border rounded-lg p-8">
-        <div className="flex items-start gap-6">
-          <div className="w-20 h-20 rounded-xl bg-accent-green flex items-center justify-center text-2xl font-bold flex-shrink-0 overflow-hidden">
-            {service.imageUrl ? (
-              <img src={service.imageUrl} alt={service.name} className="w-full h-full object-cover rounded-xl" />
-            ) : (
-              <span>{service.name[0]}</span>
-            )}
-          </div>
-          <div className="flex-1">
-            <h1 className="text-2xl font-bold">{service.name}</h1>
-            {service.categoryName && (
-              <span className="text-xs bg-bg text-text-secondary px-2 py-0.5 rounded mt-2 inline-block">{service.categoryName}</span>
-            )}
+    <div className="max-w-[780px] mx-auto px-8 py-10">
+      <Link href="/services"
+        className="inline-flex items-center gap-1.5 text-[13px] text-text-secondary hover:text-text-primary mb-6 transition-colors">
+        ← 목록으로
+      </Link>
+
+      <div className="bg-card border border-border rounded-2xl overflow-hidden">
+        {/* Header */}
+        <div className="px-8 py-8 border-b border-border">
+          <div className="flex items-start gap-5">
+            <div className={`w-[72px] h-[72px] rounded-2xl ${hues[colorIdx]} flex items-center justify-center flex-shrink-0 overflow-hidden`}>
+              {service.imageUrl ? (
+                <img src={service.imageUrl} alt={service.name} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-[18px] font-bold text-text-primary/50">{initials}</span>
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <h1 className="text-[24px] font-bold text-text-primary leading-tight">{service.name}</h1>
+                {service.categoryName && (
+                  <span className="text-[12px] bg-bg border border-border rounded-full px-3 py-0.5 text-text-secondary font-medium">
+                    {service.categoryName}
+                  </span>
+                )}
+              </div>
+              <p className="text-[13px] text-text-secondary mt-1">
+                by @{service.userNickname} · {new Date(service.createdAt).toLocaleDateString('ko-KR')}
+              </p>
+            </div>
           </div>
         </div>
 
-        <p className="text-text-secondary mt-6 leading-relaxed">{service.description}</p>
+        {/* Body */}
+        <div className="px-8 py-7">
+          <p className="text-[15px] text-text-primary leading-[1.8] whitespace-pre-wrap">{service.description}</p>
+        </div>
 
-        <div className="flex items-center gap-4 mt-8">
+        {/* Actions */}
+        <div className="px-8 py-6 bg-bg border-t border-border flex items-center gap-3 flex-wrap">
           <LikeButton serviceId={service.id} count={service.likeCount} isLiked={service.isLiked} size="lg" />
           <button onClick={toggleBookmark}
-            className={`px-6 py-3 rounded-lg text-sm font-medium border ${bookmarked ? 'bg-black text-white border-black' : 'border-border text-text-secondary hover:bg-bg'}`}>
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-[14px] font-semibold border transition-all duration-150 ${
+              bookmarked
+                ? 'bg-[#1A1918] text-white border-[#1A1918]'
+                : 'bg-card border-border text-text-secondary hover:border-text-secondary hover:text-text-primary'
+            }`}>
             {bookmarked ? '★ 관심 등록됨' : '☆ 관심 등록'}
           </button>
           <a href={service.url} target="_blank" rel="noopener noreferrer"
-            className="px-6 py-3 rounded-lg text-sm font-medium bg-black text-white">
-            사이트 방문 →
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-[14px] font-semibold bg-accent-green text-black border border-accent-green hover:bg-[#c8ff57] transition-all duration-150 ml-auto">
+            사이트 방문 ↗
           </a>
         </div>
-
-        <div className="border-t border-border mt-8 pt-6 text-sm text-text-secondary space-y-2">
-          <p>등록자: @{service.userNickname}</p>
-          <p>등록일: {new Date(service.createdAt).toLocaleDateString('ko-KR')}</p>
-        </div>
       </div>
-      <Link href="/services" className="text-sm text-text-secondary mt-4 inline-block hover:underline">← 목록으로</Link>
     </div>
   );
 }

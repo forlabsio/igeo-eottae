@@ -18,7 +18,7 @@ const CATEGORY_SLUGS: Record<string, string> = {
 
 const SORTS = [
   { value: 'likes', label: '★ 좋아요순' },
-  { value: 'latest', label: '🕐 최신순' },
+  { value: 'latest', label: '↓ 최신순' },
   { value: 'name', label: 'A→Z 이름순' },
 ] as const;
 
@@ -44,57 +44,83 @@ export default function ServicesPage() {
   }, [sort, category, page, search]);
 
   return (
-    <div className="max-w-5xl mx-auto px-8 py-8">
-      {/* 검색 + 등록 */}
-      <div className="flex items-center justify-between mb-5 gap-3 flex-wrap">
-        <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          placeholder="서비스 이름 또는 설명 검색..."
-          className="border border-border rounded px-4 py-2 text-sm w-72 bg-bg" />
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-text-secondary">총 {total}개</span>
-          <Link href="/services/new" className="bg-black text-white px-4 py-2 rounded text-sm font-semibold">+ 서비스 등록</Link>
+    <div className="max-w-[1120px] mx-auto px-8 py-8">
+      {/* Header row */}
+      <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
+        <div>
+          <h1 className="text-[22px] font-bold text-text-primary">서비스 탐색</h1>
+          <p className="text-[13px] text-text-secondary mt-0.5">총 {total}개의 서비스</p>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            placeholder="검색..."
+            className="border border-border rounded-xl px-4 py-2.5 text-[13.5px] w-56 bg-card text-text-primary placeholder:text-text-secondary/60 focus:outline-none focus:border-text-secondary transition-colors" />
+          <Link href="/services/new"
+            className="px-5 py-2.5 rounded-xl text-[13.5px] font-semibold bg-[#1A1918] text-white hover:bg-[#2d2c2b] transition-all whitespace-nowrap">
+            + 등록하기
+          </Link>
         </div>
       </div>
 
-      {/* 카테고리 필터 */}
-      <div className="flex gap-2 flex-wrap mb-4">
+      {/* Category pills */}
+      <div className="flex gap-2 flex-wrap mb-3">
         {CATEGORIES.map((cat) => (
           <button key={cat} onClick={() => { setCategory(cat); setPage(1); }}
-            className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${category === cat ? 'bg-black text-white' : 'bg-bg border border-border text-text-secondary hover:border-black hover:text-black'}`}>
+            className={`px-4 py-1.5 rounded-full text-[13px] font-medium transition-all duration-150 border ${
+              category === cat
+                ? 'bg-[#1A1918] text-white border-[#1A1918]'
+                : 'bg-card border-border text-text-secondary hover:border-text-secondary hover:text-text-primary'
+            }`}>
             {cat}
           </button>
         ))}
       </div>
 
-      {/* 정렬 */}
-      <div className="flex gap-2 mb-6">
+      {/* Sort */}
+      <div className="flex items-center gap-2 mb-6">
+        <span className="text-[12px] text-text-secondary/70 font-medium">정렬:</span>
         {SORTS.map((s) => (
           <button key={s.value} onClick={() => { setSort(s.value); setPage(1); }}
-            className={`px-3.5 py-1.5 rounded text-sm transition-colors ${sort === s.value ? 'bg-black text-white' : 'border border-border text-text-secondary hover:border-black hover:text-black'}`}>
+            className={`px-3.5 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150 border ${
+              sort === s.value
+                ? 'bg-accent-green border-accent-green text-black'
+                : 'bg-card border-border text-text-secondary hover:border-text-secondary hover:text-text-primary'
+            }`}>
             {s.label}
           </button>
         ))}
       </div>
 
-      {/* 리스트 */}
-      <div className="flex flex-col gap-3">
+      {/* List */}
+      <div className="flex flex-col gap-2.5">
         {services.map((s) => <ServiceCard key={s.id} service={s} />)}
-        {services.length === 0 && <div className="text-center py-12 text-text-secondary">서비스가 없습니다.</div>}
+        {services.length === 0 && (
+          <div className="bg-card border border-border rounded-xl py-16 text-center">
+            <p className="text-[32px] mb-2">🔍</p>
+            <p className="text-text-secondary">서비스가 없습니다.</p>
+          </div>
+        )}
       </div>
 
-      {/* 페이지네이션 */}
+      {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center gap-2 mt-8">
+        <div className="flex justify-center gap-1.5 mt-8">
           <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
-            className="px-3 py-1.5 border border-border rounded text-sm disabled:opacity-40">이전</button>
+            className="px-3.5 py-2 border border-border rounded-lg text-[13px] text-text-secondary disabled:opacity-40 hover:bg-border/40 transition-all">
+            ← 이전
+          </button>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
             <button key={p} onClick={() => setPage(p)}
-              className={`px-3 py-1.5 border rounded text-sm ${p === page ? 'bg-black text-white border-black' : 'border-border text-text-secondary'}`}>
+              className={`px-3.5 py-2 border rounded-lg text-[13px] font-medium transition-all ${
+                p === page ? 'bg-[#1A1918] text-white border-[#1A1918]' : 'border-border text-text-secondary hover:bg-border/40'
+              }`}>
               {p}
             </button>
           ))}
           <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-            className="px-3 py-1.5 border border-border rounded text-sm disabled:opacity-40">다음</button>
+            className="px-3.5 py-2 border border-border rounded-lg text-[13px] text-text-secondary disabled:opacity-40 hover:bg-border/40 transition-all">
+            다음 →
+          </button>
         </div>
       )}
     </div>

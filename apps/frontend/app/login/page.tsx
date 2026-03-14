@@ -29,33 +29,48 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-bg flex items-center justify-center">
-      <div className="bg-white border border-border rounded-xl p-10 w-[440px] flex flex-col gap-6">
-        <div className="text-xl font-bold">이거 어때</div>
-        <div>
-          <h1 className="text-xl font-semibold">다시 만나서 반가워요 👋</h1>
-          <p className="text-sm text-text-secondary mt-1">계정에 로그인하여 서비스를 탐색하세요.</p>
+    <div className="min-h-screen bg-bg flex items-center justify-center px-4">
+      <div className="w-full max-w-[420px]">
+        <div className="text-center mb-8">
+          <span className="inline-flex items-center gap-1.5 bg-accent-green text-black text-[12px] font-bold px-3 py-1 rounded-full">
+            ✦ 이거 어때
+          </span>
+          <h1 className="text-[26px] font-extrabold text-text-primary mt-4 tracking-tight">다시 만나서 반가워요</h1>
+          <p className="text-[14px] text-text-secondary mt-1.5">계정에 로그인하여 서비스를 탐색하세요.</p>
         </div>
-        <form onSubmit={submit} className="flex flex-col gap-4">
-          <div>
-            <label className="text-sm font-medium mb-1.5 block">이메일</label>
-            <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="w-full border border-border rounded px-3.5 py-3 text-sm bg-bg" placeholder="hello@example.com" required />
-          </div>
-          <div>
-            <label className="text-sm font-medium mb-1.5 block">비밀번호</label>
-            <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="w-full border border-border rounded px-3.5 py-3 text-sm bg-bg" placeholder="••••••••" required />
-          </div>
-          {error && <p className="text-sm text-danger">{error}</p>}
-          <button type="submit" className="w-full bg-black text-white py-3.5 rounded text-sm font-semibold mt-2">로그인</button>
-        </form>
-        <p className="text-center text-sm text-text-secondary">
-          계정이 없으신가요?{' '}
-          <Link href="/register" className="font-semibold text-black">회원가입</Link>
-        </p>
-        <div className="bg-accent-green rounded px-4 py-3 text-sm font-medium text-black">
-          한국 메이커들이 만든 서비스를 발견하세요!
+
+        <div className="bg-card border border-border rounded-2xl p-8 shadow-card">
+          <form onSubmit={submit} className="flex flex-col gap-4">
+            <div>
+              <label className="text-[13px] font-semibold text-text-primary mb-1.5 block">이메일</label>
+              <input type="email" value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                className="w-full border border-border rounded-xl px-4 py-3 text-[14px] bg-bg text-text-primary placeholder:text-text-secondary/60 focus:outline-none focus:border-text-secondary transition-colors"
+                placeholder="hello@example.com" required />
+            </div>
+            <div>
+              <label className="text-[13px] font-semibold text-text-primary mb-1.5 block">비밀번호</label>
+              <input type="password" value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                className="w-full border border-border rounded-xl px-4 py-3 text-[14px] bg-bg text-text-primary placeholder:text-text-secondary/60 focus:outline-none focus:border-text-secondary transition-colors"
+                placeholder="••••••••" required />
+            </div>
+            {error && (
+              <p className="text-[13px] text-danger bg-danger/10 px-4 py-2.5 rounded-xl">{error}</p>
+            )}
+            <button type="submit"
+              className="w-full bg-[#1A1918] text-white py-3.5 rounded-xl text-[14.5px] font-semibold mt-1 hover:bg-[#2d2c2b] transition-all">
+              로그인
+            </button>
+          </form>
+          <p className="text-center text-[13px] text-text-secondary mt-5">
+            계정이 없으신가요?{' '}
+            <Link href="/register" className="font-semibold text-text-primary hover:underline">회원가입</Link>
+          </p>
+        </div>
+
+        <div className="mt-4 bg-accent-green/20 border border-accent-green/40 rounded-xl px-5 py-3 text-[13px] font-medium text-text-primary text-center">
+          한국 메이커들이 만든 서비스를 발견하세요 ✦
         </div>
       </div>
     </div>

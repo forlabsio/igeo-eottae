@@ -13,11 +13,10 @@ interface ServiceItem {
 
 const CATEGORIES = ['전체', 'AI/ML', 'SaaS', '개발툴', '핀테크', '마케팅', '커머스', '기타'];
 const SORTS = [
-  { value: 'latest', label: '🕐 등록순' },
+  { value: 'latest', label: '↓ 등록순' },
   { value: 'likes', label: '★ 좋아요순' },
   { value: 'name', label: 'A→Z 이름순' },
 ] as const;
-
 type SortValue = typeof SORTS[number]['value'];
 
 export default function BookmarksPage() {
@@ -44,45 +43,56 @@ export default function BookmarksPage() {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
-  if (loading) return <div className="p-8 text-text-secondary">로딩 중...</div>;
+  const availableCategories = CATEGORIES.filter(
+    (cat) => cat === '전체' || items.some((s) => s.categoryName === cat)
+  );
+
+  if (loading) return <div className="p-8 text-[14px] text-text-secondary">로딩 중...</div>;
   if (!user) return null;
 
   return (
-    <div className="max-w-4xl mx-auto px-8 py-10">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">관심 목록</h1>
-          <p className="text-sm text-text-secondary mt-1">저장한 서비스 {filtered.length}개</p>
+    <div className="max-w-[1120px] mx-auto px-8 py-10">
+      <div className="mb-7">
+        <h1 className="text-[22px] font-bold text-text-primary">관심 목록</h1>
+        <p className="text-[13px] text-text-secondary mt-0.5">저장한 서비스 {filtered.length}개</p>
+      </div>
+
+      {availableCategories.length > 1 && (
+        <div className="flex gap-2 flex-wrap mb-3">
+          {availableCategories.map((cat) => (
+            <button key={cat} onClick={() => setCategory(cat)}
+              className={`px-4 py-1.5 rounded-full text-[13px] font-medium transition-all duration-150 border ${
+                category === cat
+                  ? 'bg-[#1A1918] text-white border-[#1A1918]'
+                  : 'bg-card border-border text-text-secondary hover:border-text-secondary hover:text-text-primary'
+              }`}>
+              {cat}
+            </button>
+          ))}
         </div>
-      </div>
+      )}
 
-      {/* 카테고리 필터 */}
-      <div className="flex gap-2 flex-wrap mb-4">
-        {CATEGORIES.filter((cat) => cat === '전체' || items.some((s) => s.categoryName === cat)).map((cat) => (
-          <button key={cat} onClick={() => setCategory(cat)}
-            className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${category === cat ? 'bg-black text-white' : 'bg-bg border border-border text-text-secondary hover:border-black hover:text-black'}`}>
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* 정렬 */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex items-center gap-2 mb-6">
+        <span className="text-[12px] text-text-secondary/70 font-medium">정렬:</span>
         {SORTS.map((s) => (
           <button key={s.value} onClick={() => setSort(s.value)}
-            className={`px-3.5 py-1.5 rounded text-sm transition-colors ${sort === s.value ? 'bg-black text-white' : 'border border-border text-text-secondary hover:border-black hover:text-black'}`}>
+            className={`px-3.5 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150 border ${
+              sort === s.value
+                ? 'bg-accent-green border-accent-green text-black'
+                : 'bg-card border-border text-text-secondary hover:border-text-secondary hover:text-text-primary'
+            }`}>
             {s.label}
           </button>
         ))}
       </div>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2.5">
         {filtered.map((s) => <ServiceCard key={s.id} service={s} />)}
         {filtered.length === 0 && (
-          <div className="text-center py-16 text-text-secondary">
-            <p className="text-4xl mb-3">☆</p>
-            <p>관심 등록한 서비스가 없습니다.</p>
-            <p className="text-sm mt-1">서비스 상세 페이지에서 ☆ 관심 등록을 눌러 저장하세요.</p>
+          <div className="bg-card border border-border rounded-2xl py-16 text-center">
+            <p className="text-[40px] mb-3">☆</p>
+            <p className="text-text-secondary font-medium">관심 등록한 서비스가 없습니다.</p>
+            <p className="text-[13px] text-text-secondary/70 mt-1.5">서비스 상세 페이지에서 ☆ 관심 등록을 눌러 저장하세요.</p>
           </div>
         )}
       </div>

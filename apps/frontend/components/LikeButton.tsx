@@ -4,17 +4,17 @@ import api from '@/lib/api';
 
 interface Props { serviceId: string; count: number; isLiked?: boolean; size?: 'sm' | 'lg'; }
 
-export default function LikeButton({ serviceId, count: initialCount, isLiked: initialLiked, size = 'sm' }: Props) {
-  const [liked, setLiked] = useState(initialLiked ?? false);
-  const [count, setCount] = useState(initialCount);
-  const [animate, setAnimate] = useState(false);
-  const prevLiked = useRef(initialLiked ?? false);
+export default function LikeButton({ serviceId, count: initCount, isLiked: initLiked, size = 'sm' }: Props) {
+  const [liked, setLiked] = useState(initLiked ?? false);
+  const [count, setCount] = useState(initCount);
+  const [popping, setPopping] = useState(false);
+  const [counting, setCounting] = useState(false);
+  const countKey = useRef(0);
 
   useEffect(() => {
-    setLiked(initialLiked ?? false);
-    setCount(initialCount);
-    prevLiked.current = initialLiked ?? false;
-  }, [initialLiked, initialCount]);
+    setLiked(initLiked ?? false);
+    setCount(initCount);
+  }, [initLiked, initCount]);
 
   const toggle = async () => {
     try {
@@ -22,9 +22,12 @@ export default function LikeButton({ serviceId, count: initialCount, isLiked: in
       setLiked(data.liked);
       setCount((c) => data.liked ? c + 1 : c - 1);
       if (data.liked) {
-        setAnimate(true);
-        setTimeout(() => setAnimate(false), 600);
+        setPopping(true);
+        setTimeout(() => setPopping(false), 400);
       }
+      countKey.current += 1;
+      setCounting(true);
+      setTimeout(() => setCounting(false), 300);
     } catch {
       if (typeof window !== 'undefined') window.location.href = '/login';
     }
@@ -33,22 +36,33 @@ export default function LikeButton({ serviceId, count: initialCount, isLiked: in
   if (size === 'lg') {
     return (
       <button onClick={toggle}
-        className={`flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-medium border transition-all duration-200 ${liked ? 'bg-amber-50 border-amber-400 text-amber-600' : 'border-border text-text-secondary hover:bg-bg'}`}>
-        <span className={`text-lg transition-transform duration-200 ${animate ? 'scale-125' : 'scale-100'}`}>
+        className={`inline-flex items-center gap-2.5 px-5 py-2.5 rounded-lg text-sm font-semibold border transition-all duration-150 ${
+          liked
+            ? 'bg-accent-green border-accent-green text-black'
+            : 'bg-card border-border text-text-secondary hover:border-text-secondary hover:text-text-primary'
+        }`}>
+        <span className={popping ? 'like-pop inline-block' : 'inline-block'}>
           {liked ? '★' : '☆'}
         </span>
-        <span className={`font-bold tabular-nums ${animate ? 'text-amber-600' : ''}`}>{count}</span>
+        <span key={countKey.current} className={counting ? 'count-in inline-block tabular-nums font-bold' : 'inline-block tabular-nums font-bold'}>
+          {count}
+        </span>
       </button>
     );
   }
 
+  /* sm — vertical pill on card left side */
   return (
     <button onClick={toggle}
-      className={`flex flex-col items-center justify-center gap-0.5 w-[72px] h-full border-r border-border cursor-pointer transition-colors duration-200 ${liked ? 'bg-amber-50' : 'bg-transparent hover:bg-bg'}`}>
-      <span className={`text-base transition-all duration-200 ${liked ? 'text-amber-500' : 'text-text-secondary'} ${animate ? 'scale-125' : 'scale-100'}`}>
+      className={`flex flex-col items-center justify-center gap-0.5 w-[68px] self-stretch rounded-l-xl border-r border-border transition-all duration-150 cursor-pointer flex-shrink-0 ${
+        liked ? 'bg-accent-green/20' : 'bg-transparent hover:bg-border/50'
+      }`}>
+      <span className={`text-[16px] leading-none ${popping ? 'like-pop inline-block' : 'inline-block'} ${liked ? 'text-[#5c7a00]' : 'text-text-secondary'}`}>
         {liked ? '★' : '☆'}
       </span>
-      <span className={`text-xs font-bold tabular-nums transition-colors duration-200 ${liked ? 'text-amber-600' : 'text-text-secondary'}`}>
+      <span
+        key={countKey.current}
+        className={`text-[12px] font-bold tabular-nums leading-none ${counting ? 'count-in inline-block' : 'inline-block'} ${liked ? 'text-[#5c7a00]' : 'text-text-secondary'}`}>
         {count}
       </span>
     </button>
