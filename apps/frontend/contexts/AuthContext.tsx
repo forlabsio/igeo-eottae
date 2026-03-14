@@ -25,6 +25,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (token) {
+      // Sync to cookie for middleware protection
+      document.cookie = `accessToken=${token}; path=/; max-age=604800; SameSite=Strict`;
       api.get('/users/me')
         .then(({ data }) => setUser(data))
         .catch(() => {})
