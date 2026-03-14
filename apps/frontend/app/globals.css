@@ -1,0 +1,51 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+@import "tailwindcss";
+
+:root {
+  --background: #111110;
+  --foreground: #F2F0EB;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-bg: #111110;
+  --color-card: #1C1B19;
+  --color-card-elevated: #242320;
+  --color-accent-green: #ADFA1D;
+  --color-text-primary: #F2F0EB;
+  --color-text-secondary: #6B6760;
+  --color-border: #2A2926;
+  --color-danger: #EF4444;
+}
+
+* {
+  font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont,
+    'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+@keyframes like-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.5); }
+  100% { transform: scale(1); }
+}
+
+.like-pop {
+  animation: like-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes count-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.count-in {
+  animation: count-in 0.18s ease-out;
+}

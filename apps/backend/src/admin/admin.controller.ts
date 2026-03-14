@@ -1,0 +1,96 @@
+import { Controller, Delete, Get, Param, Patch, Query, UseGuards } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from '../entities/user.entity';
+import { Service } from '../entities/service.entity';
+import { Like } from '../entities/like.entity';
+import { Inquiry } from '../entities/inquiry.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+
+@Controller('admin')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('admin')
+export class AdminController {
+  constructor(
+    @InjectRepository(User) private userRepo: Repository<User>,
+    @InjectRepository(Service) private serviceRepo: Repository<Service>,
+    @InjectRepository(Like) private likeRepo: Repository<Like>,
+    @InjectRepository(Inquiry) private inquiryRepo: Repository<Inquiry>,
+  ) {}
+
+  @Get('stats')
+  async getStats() {
+    const [totalUsers, totalServices, totalLikes, blockedUsers, totalInquiries] = await Promise.all([
+      this.userRepo.count(),
+      this.serviceRepo.count(),
+      this.likeRepo.count(),
+      this.userRepo.count({ where: { isBlocked: true } }),
+      this.inquiryRepo.count(),
+    ]);
+    return { totalUsers, totalServices, totalLikes, blockedUsers, totalInquiries };
+  }
+
+  @Get('users')
+  async getUsers(@Query('page') page = 1, @Query('limit') limit = 20) {
+    const [data, total] = await this.userRepo.findAndCount({
+      order: { createdAt: 'DESC' },
+      skip: (Number(page) - 1) * Number(limit),
+      take: Number(limit),
+      select: ['id', 'email', 'nickname', 'role', 'isBlocked', 'createdAt'],
+    });
+    return { data, total };
+  }
+
+  @Patch('users/:id/block')
+  async blockUser(@Param('id') id: string) {
+    const user = await this.userRepo.findOneByOrFail({ id });
+    user.isBlocked = !user.isBlocked;
+    return this.userRepo.save(user);
+  }
+
+  @Delete('users/:id')
+  deleteUser(@Param('id') id: string) {
+    return this.userRepo.delete(id);
+  }
+
+  @Get('services')
+  async getServices(@Query('page') page = 1, @Query('limit') limit = 20) {
+    const [data, total] = await this.serviceRepo.findAndCount({
+      relations: ['user', 'category'],
+      order: { createdAt: 'DESC' },
+      skip: (Number(page) - 1) * Number(limit),
+      take: Number(limit),
+    });
+    return { data, total };
+  }
+
+  @Patch('services/:id/hide')
+  async hideService(@Param('id') id: string) {
+    const s = await this.serviceRepo.findOneByOrFail({ id });
+    s.isHidden = !s.isHidden;
+    return this.serviceRepo.save(s);
+  }
+
+  @Delete('services/:id')
+  deleteService(@Param('id') id: string) {
+    return this.serviceRepo.delete(id);
+  }
+
+  @Get('inquiries')
+  async getInquiries(@Query('page') page = 1, @Query('limit') limit = 30) {
+    const [data, total] = await this.inquiryRepo.findAndCount({
+      relations: ['sender', 'receiver', 'service'],
+      order: { createdAt: 'DESC' },
+      skip: (Number(page) - 1) * Number(limit),
+      take: Number(limit),
+    });
+    return { data, total };
+  }
+
+  @Delete('inquiries/:id')
+  deleteInquiry(@Param('id') id: string) {
+    return this.inquiryRepo.delete(id);
+  }
+}
