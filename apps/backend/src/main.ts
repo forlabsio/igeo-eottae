@@ -9,16 +9,11 @@ async function bootstrap() {
   // 보안 헤더
   app.use(helmet());
 
-  // CORS
-  const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000')
-    .split(',')
-    .map((o) => o.trim());
+  // CORS — JWT는 Authorization 헤더로 처리되므로 origin 제한 불필요
+  const corsOrigin = process.env.CORS_ORIGIN || '*';
   app.enableCors({
-    origin: (origin, cb) => {
-      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-      return cb(new Error('Not allowed by CORS'));
-    },
-    credentials: true,
+    origin: corsOrigin,
+    credentials: corsOrigin !== '*',
   });
 
   // 전역 접두사
