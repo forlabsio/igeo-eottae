@@ -29,9 +29,14 @@ export default function EditServicePage() {
   }, []);
 
   useEffect(() => {
-    if (!id) return;
+    if (!id || loading) return;
+    if (!user) return; // login redirect handled by other effect
     api.get(`/services/${id}`)
       .then(({ data }) => {
+        if (data.userId && data.userId !== user.id) {
+          router.replace(`/services/${id}`);
+          return;
+        }
         setForm({
           name: data.name ?? '',
           description: data.description ?? '',
@@ -42,7 +47,7 @@ export default function EditServicePage() {
       })
       .catch(() => router.replace('/mypage'))
       .finally(() => setFetching(false));
-  }, [id, router]);
+  }, [id, router, user, loading]);
 
   const toggleRegion = (slug: string) => {
     setSelectedRegions((prev) =>

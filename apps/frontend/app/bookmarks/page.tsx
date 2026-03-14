@@ -92,7 +92,7 @@ export default function BookmarksPage() {
           <div className="bg-card border border-border rounded-2xl py-16 text-center">
             <p className="text-[40px] mb-3">☆</p>
             <p className="text-text-secondary font-medium">관심 등록한 서비스가 없습니다.</p>
-            <p className="text-[13px] text-text-secondary/70 mt-1.5">서비스 상세 페이지에서 ☆ 관심 등록을 눌러 저장하세요.</p>
+            <p className="text-[13px] text-text-secondary/70 mt-1.5">서비스 상세 페이지에서 저장 버튼을 눌러 저장하세요.</p>
           </div>
         )}
       </div>

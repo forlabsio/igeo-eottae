@@ -21,7 +21,8 @@ export class InquiriesService {
     if (exists) throw new BadRequestException('이미 대기 중인 문의가 있습니다.');
 
     const inquiry = this.repo.create({ senderId, receiverId: service.userId, serviceId: dto.serviceId, title: dto.title, message: dto.message });
-    return this.repo.save(inquiry);
+    const saved = await this.repo.save(inquiry);
+    return this.toDto(saved, userId);
   }
 
   async getReceived(userId: string) {
@@ -52,7 +53,8 @@ export class InquiriesService {
   async reject(id: string, userId: string) {
     const inquiry = await this.findAndCheckReceiver(id, userId);
     inquiry.status = 'rejected';
-    return this.repo.save(inquiry);
+    const saved = await this.repo.save(inquiry);
+    return this.toDto(saved, userId);
   }
 
   private async findAndCheckReceiver(id: string, userId: string) {

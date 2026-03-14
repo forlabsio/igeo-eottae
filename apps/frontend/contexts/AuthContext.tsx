@@ -29,7 +29,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       document.cookie = `accessToken=${token}; path=/; max-age=604800; SameSite=Strict`;
       api.get('/users/me')
         .then(({ data }) => setUser(data))
-        .catch(() => {})
+        .catch(() => {
+          // Token invalid/expired and refresh also failed — clear stale tokens
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          document.cookie = 'accessToken=; path=/; max-age=0';
+        })
         .finally(() => setLoading(false));
     } else {
       setLoading(false);
