@@ -15,6 +15,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <Navbar />
           <main>{children}</main>
+          <footer className="border-t border-border mt-auto py-5 text-center text-[12px] text-text-secondary/50">
+            © 2026 ForLabs. All rights reserved.
+          </footer>
         </AuthProvider>
       </body>
     </html>
