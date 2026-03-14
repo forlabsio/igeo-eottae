@@ -10,7 +10,7 @@ export default function NewServicePage() {
   const router = useRouter();
   const { user, loading } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
-  const [form, setForm] = useState({ name: '', description: '', url: '', categoryId: '', imageUrl: '' });
+  const [form, setForm] = useState({ name: '', description: '', url: '', categoryId: '' });
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function NewServicePage() {
     e.preventDefault();
     setError('');
     try {
-      const payload = { ...form, categoryId: form.categoryId || undefined, imageUrl: form.imageUrl || undefined };
+      const payload = { ...form, categoryId: form.categoryId || undefined };
       const { data } = await api.post('/services', payload);
       router.push(`/services/${data.id}`);
     } catch (err: unknown) {
@@ -69,13 +69,6 @@ export default function NewServicePage() {
               }}
               className="w-full border border-border rounded-xl px-4 py-3 text-[14px] bg-bg text-text-primary placeholder:text-text-secondary/60 focus:outline-none focus:border-text-secondary transition-colors"
               placeholder="example.com" required />
-          </div>
-
-          <div>
-            <label className="text-[13px] font-semibold text-text-primary mb-1.5 block">대표 이미지 URL <span className="text-text-secondary font-normal">(선택)</span></label>
-            <input value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-              className="w-full border border-border rounded-xl px-4 py-3 text-[14px] bg-bg text-text-primary placeholder:text-text-secondary/60 focus:outline-none focus:border-text-secondary transition-colors"
-              placeholder="https://..." />
           </div>
 
           <div>
