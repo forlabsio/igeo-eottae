@@ -120,6 +120,7 @@ export class ServicesService {
       isLiked,
       isBookmarked,
       createdAt: s.createdAt,
+      targetRegions: s.targetRegions ?? [],
     };
   }
 }

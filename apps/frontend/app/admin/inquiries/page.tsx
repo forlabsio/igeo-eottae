@@ -14,8 +14,8 @@ interface AdminInquiry {
   status: 'pending' | 'accepted' | 'rejected';
   createdAt: string;
   service: { id: string; name: string } | null;
-  senderNickname: string;
-  receiverNickname: string;
+  sender: { nickname: string } | null;
+  receiver: { nickname: string } | null;
 }
 
 const STATUS_MAP = {
@@ -38,7 +38,8 @@ export default function AdminInquiriesPage() {
     setFetching(true);
     try {
       const { data } = await api.get('/admin/inquiries');
-      setItems(data);
+      // findAndCount returns [array, count]
+      setItems(Array.isArray(data[0]) ? data[0] : data);
     } finally {
       setFetching(false);
     }
@@ -92,7 +93,7 @@ export default function AdminInquiriesPage() {
                         {item.service ? (
                           <Link href={`/services/${item.service.id}`} className="hover:underline">{item.service.name}</Link>
                         ) : '삭제된 서비스'}
-                        {' · '}@{item.senderNickname} → @{item.receiverNickname}
+                        {' · '}@{item.sender?.nickname ?? '-'} → @{item.receiver?.nickname ?? '-'}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
