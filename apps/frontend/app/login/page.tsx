@@ -21,7 +21,7 @@ export default function LoginPage() {
       document.cookie = `accessToken=${data.accessToken}; path=/; max-age=604800; SameSite=Strict`;
       const { data: me } = await api.get('/users/me');
       setUser(me);
-      router.push('/');
+      window.location.href = '/';
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { message?: string } } };
       setError(axiosErr.response?.data?.message || '로그인에 실패했습니다.');

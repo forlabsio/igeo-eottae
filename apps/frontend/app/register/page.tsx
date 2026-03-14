@@ -23,7 +23,7 @@ function RegisterForm() {
       document.cookie = `accessToken=${data.accessToken}; path=/; max-age=604800; SameSite=Strict`;
       const { data: me } = await api.get('/users/me');
       setUser(me);
-      router.push('/');
+      window.location.href = '/';
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { message?: string | string[] } } };
       const msg = axiosErr.response?.data?.message;
