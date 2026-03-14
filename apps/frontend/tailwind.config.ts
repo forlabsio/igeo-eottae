@@ -5,20 +5,21 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: '#F3F1EB',
-        card: '#FFFFFF',
+        bg: '#111110',
+        card: '#1C1B19',
+        'card-elevated': '#242320',
         'accent-green': '#ADFA1D',
-        'text-primary': '#1A1918',
-        'text-secondary': '#9B9690',
-        border: '#E6E1D8',
+        'text-primary': '#F2F0EB',
+        'text-secondary': '#6B6760',
+        border: '#2A2926',
         danger: '#EF4444',
       },
       fontFamily: {
         sans: ['Pretendard Variable', 'Pretendard', '-apple-system', 'BlinkMacSystemFont', 'Apple SD Gothic Neo', 'Noto Sans KR', 'sans-serif'],
       },
       boxShadow: {
-        card: '0 1px 3px rgba(26,25,24,0.06)',
-        'card-hover': '0 4px 12px rgba(26,25,24,0.10)',
+        card: '0 1px 3px rgba(0,0,0,0.30)',
+        'card-hover': '0 4px 16px rgba(0,0,0,0.50)',
       },
     },
   },

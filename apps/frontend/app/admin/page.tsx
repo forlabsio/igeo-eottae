@@ -26,10 +26,10 @@ export default function AdminPage() {
   if (loading || !user || user.role !== 'admin') return null;
 
   const cards = [
-    { label: '총 회원수', value: stats?.totalUsers ?? '-', icon: Users, color: 'bg-[#D4EAF5]', text: '#3B9ED4' },
-    { label: '등록 서비스', value: stats?.totalServices ?? '-', icon: Package, color: 'bg-[#E8F5D4]', text: '#5c7a00' },
-    { label: '총 좋아요', value: stats?.totalLikes ?? '-', icon: Heart, color: 'bg-[#F5E8D4]', text: '#D4903B' },
-    { label: '차단 회원', value: stats?.blockedUsers ?? '-', icon: ShieldOff, color: 'bg-[#F5D4D4]', text: '#D43B3B' },
+    { label: '총 회원수', value: stats?.totalUsers ?? '-', icon: Users, color: 'bg-[#0E2230]', text: '#3B9ED4' },
+    { label: '등록 서비스', value: stats?.totalServices ?? '-', icon: Package, color: 'bg-[#1D2E10]', text: '#7CC71A' },
+    { label: '총 좋아요', value: stats?.totalLikes ?? '-', icon: Heart, color: 'bg-[#2E1E0A]', text: '#D4903B' },
+    { label: '차단 회원', value: stats?.blockedUsers ?? '-', icon: ShieldOff, color: 'bg-[#2E0A0A]', text: '#D43B3B' },
   ];
 
   return (

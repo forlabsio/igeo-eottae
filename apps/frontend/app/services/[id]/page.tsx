@@ -35,14 +35,12 @@ export default function ServiceDetailPage() {
     });
   }, [id]);
 
-  // Auto-open form when ?connect=1
   useEffect(() => {
     if (searchParams.get('connect') === '1') {
       setShowConnect(true);
     }
   }, [searchParams]);
 
-  // Scroll to form when it opens
   useEffect(() => {
     if (showConnect) {
       setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
@@ -91,7 +89,7 @@ export default function ServiceDetailPage() {
 
   const isOwner = user?.id === service.userId;
   const initials = service.name.slice(0, 2).toUpperCase();
-  const hues = ['bg-[#E8F5D4]', 'bg-[#D4EAF5]', 'bg-[#F5E8D4]', 'bg-[#EED4F5]', 'bg-[#F5D4D4]'];
+  const hues = ['bg-[#1D2E10]', 'bg-[#0E2230]', 'bg-[#2E1E0A]', 'bg-[#230A33]', 'bg-[#2E0A0A]'];
   const colorIdx = service.name.charCodeAt(0) % hues.length;
 
   return (
@@ -109,7 +107,7 @@ export default function ServiceDetailPage() {
               {service.imageUrl ? (
                 <img src={service.imageUrl} alt={service.name} className="w-full h-full object-cover" />
               ) : (
-                <span className="text-[18px] font-bold text-text-primary/50">{initials}</span>
+                <span className="text-[18px] font-bold text-text-primary/60">{initials}</span>
               )}
             </div>
             <div className="flex-1 min-w-0">
@@ -140,11 +138,11 @@ export default function ServiceDetailPage() {
           {isOwner ? (
             <>
               <Link href={`/services/${service.id}/edit`}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-[14px] font-semibold border border-border bg-card text-text-secondary hover:bg-[#1A1918] hover:border-[#1A1918] hover:text-white transition-all duration-150">
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-[14px] font-semibold border border-border bg-card text-text-secondary hover:bg-text-primary hover:border-text-primary hover:text-bg transition-all duration-150">
                 <Pencil size={14} /> 수정
               </Link>
               <button onClick={handleDelete}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-[14px] font-semibold border border-border bg-card text-text-secondary hover:bg-[#F5D4D4] hover:border-[#D43B3B] hover:text-[#D43B3B] transition-all duration-150">
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-[14px] font-semibold border border-border bg-card text-text-secondary hover:bg-danger/15 hover:border-danger hover:text-danger transition-all duration-150">
                 <Trash2 size={14} /> 삭제
               </button>
             </>
@@ -153,7 +151,7 @@ export default function ServiceDetailPage() {
               <button onClick={toggleBookmark}
                 className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-[14px] font-semibold border transition-all duration-150 ${
                   bookmarked
-                    ? 'bg-[#1A1918] text-white border-[#1A1918]'
+                    ? 'bg-text-primary text-bg border-text-primary'
                     : 'bg-card border-border text-text-secondary hover:border-text-secondary hover:text-text-primary'
                 }`}>
                 {bookmarked ? <BookmarkCheck size={15} /> : <Bookmark size={15} />}
@@ -165,8 +163,8 @@ export default function ServiceDetailPage() {
               }}
                 className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-[14px] font-semibold border transition-all duration-150 ${
                   showConnect
-                    ? 'bg-[#1A1918] text-white border-[#1A1918]'
-                    : 'bg-card border-border text-text-secondary hover:bg-[#1A1918] hover:border-[#1A1918] hover:text-white'
+                    ? 'bg-text-primary text-bg border-text-primary'
+                    : 'bg-card border-border text-text-secondary hover:bg-text-primary hover:border-text-primary hover:text-bg'
                 }`}>
                 <Handshake size={14} /> 사업 문의
               </button>
@@ -174,7 +172,7 @@ export default function ServiceDetailPage() {
           )}
 
           <a href={service.url} target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-[14px] font-semibold bg-accent-green text-black border border-accent-green hover:bg-[#c8ff57] transition-all duration-150 ml-auto">
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-[14px] font-semibold bg-accent-green text-black border border-accent-green hover:bg-accent-green/90 transition-all duration-150 ml-auto">
             사이트 방문 ↗
           </a>
         </div>
@@ -183,7 +181,7 @@ export default function ServiceDetailPage() {
         {showConnect && !isOwner && (
           <div ref={formRef} className="px-8 py-7 border-t border-border">
             <div className="flex items-center gap-2 mb-5">
-              <div className="w-7 h-7 bg-[#1A1918] rounded-lg flex items-center justify-center">
+              <div className="w-7 h-7 bg-card-elevated rounded-lg flex items-center justify-center">
                 <Handshake size={13} className="text-accent-green" />
               </div>
               <div>
@@ -219,16 +217,16 @@ export default function ServiceDetailPage() {
               </div>
 
               {connectError && (
-                <p className="text-[12.5px] text-[#D43B3B] bg-[#F5D4D4]/60 px-4 py-2.5 rounded-xl">{connectError}</p>
+                <p className="text-[12.5px] text-danger bg-danger/10 px-4 py-2.5 rounded-xl">{connectError}</p>
               )}
 
               <div className="flex justify-end gap-2">
                 <button type="button" onClick={() => setShowConnect(false)}
-                  className="px-5 py-2.5 rounded-xl text-[13.5px] border border-border text-text-secondary hover:text-text-primary hover:bg-bg transition-all">
+                  className="px-5 py-2.5 rounded-xl text-[13.5px] border border-border text-text-secondary hover:text-text-primary hover:bg-card-elevated transition-all">
                   취소
                 </button>
                 <button type="submit" disabled={connectSubmitting}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-[13.5px] font-semibold bg-[#1A1918] text-white hover:bg-[#2d2c2b] disabled:opacity-60 transition-all">
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-[13.5px] font-semibold bg-text-primary text-bg hover:bg-text-primary/90 disabled:opacity-60 transition-all">
                   <Send size={13} />
                   {connectSubmitting ? '전송 중...' : '문의 보내기'}
                 </button>

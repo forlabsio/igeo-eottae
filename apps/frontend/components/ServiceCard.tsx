@@ -30,12 +30,12 @@ export const REGION_MAP: Record<string, { flag: string; label: string }> = {
 };
 
 const PALETTE = [
-  { bg: 'bg-[#E8F5D4]', accent: '#7CC71A' },
-  { bg: 'bg-[#D4EAF5]', accent: '#3B9ED4' },
-  { bg: 'bg-[#F5E8D4]', accent: '#D4903B' },
-  { bg: 'bg-[#EED4F5]', accent: '#A63BD4' },
-  { bg: 'bg-[#F5D4D4]', accent: '#D43B3B' },
-  { bg: 'bg-[#D4F5EE]', accent: '#1DB37D' },
+  { bg: 'bg-[#1D2E10]', accent: '#7CC71A' },
+  { bg: 'bg-[#0E2230]', accent: '#3B9ED4' },
+  { bg: 'bg-[#2E1E0A]', accent: '#D4903B' },
+  { bg: 'bg-[#230A33]', accent: '#A63BD4' },
+  { bg: 'bg-[#2E0A0A]', accent: '#D43B3B' },
+  { bg: 'bg-[#082E24]', accent: '#1DB37D' },
 ];
 
 export default function ServiceCard({ service }: { service: ServiceItem }) {
@@ -59,18 +59,18 @@ export default function ServiceCard({ service }: { service: ServiceItem }) {
   };
 
   return (
-    <div className="group bg-card border border-border rounded-2xl overflow-hidden hover:border-[#1A1918]/30 hover:shadow-[0_8px_32px_rgba(0,0,0,0.10)] transition-all duration-200 flex flex-col">
+    <div className="group bg-card border border-border rounded-2xl overflow-hidden hover:border-text-primary/20 hover:shadow-card-hover transition-all duration-200 flex flex-col">
       {/* Top color band + logo */}
       <div className={`${bg} h-[80px] relative flex items-end px-4 pb-0`}>
         {/* Category badge top-right */}
         {service.categoryName && (
-          <span className="absolute top-3 right-3 text-[11px] font-semibold bg-white/80 backdrop-blur-sm rounded-full px-2.5 py-1 text-text-primary/70 flex items-center gap-1">
+          <span className="absolute top-3 right-3 text-[11px] font-semibold bg-black/50 backdrop-blur-sm rounded-full px-2.5 py-1 text-text-primary/80 flex items-center gap-1">
             <span>{catIcon}</span> {service.categoryName}
           </span>
         )}
         {/* Logo */}
-        <div className="w-14 h-14 rounded-2xl border-2 border-white shadow-md flex items-center justify-center overflow-hidden translate-y-7 bg-white"
-          style={{ boxShadow: `0 4px 16px ${accent}30` }}>
+        <div className="w-14 h-14 rounded-2xl border-2 border-border shadow-md flex items-center justify-center overflow-hidden translate-y-7 bg-card-elevated"
+          style={{ boxShadow: `0 4px 16px ${accent}40` }}>
           {service.imageUrl ? (
             <img src={service.imageUrl} alt={service.name} className="w-full h-full object-cover" />
           ) : (
@@ -118,14 +118,14 @@ export default function ServiceCard({ service }: { service: ServiceItem }) {
           {(!user || user.id !== service.userId) && (
             <button onClick={handleConnect}
               title="사업 문의 보내기"
-              className="w-9 h-9 rounded-xl flex items-center justify-center border border-border bg-card text-text-secondary hover:bg-[#1A1918] hover:border-[#1A1918] hover:text-white transition-all duration-150">
+              className="w-9 h-9 rounded-xl flex items-center justify-center border border-border bg-card text-text-secondary hover:bg-text-primary hover:border-text-primary hover:text-bg transition-all duration-150">
               <Handshake size={14} />
             </button>
           )}
           <a href={service.url} target="_blank" rel="noopener noreferrer"
             onClick={handleExternalLink}
             title="서비스 방문"
-            className="w-9 h-9 rounded-xl flex items-center justify-center border border-[#1A1918] bg-[#1A1918] text-white hover:bg-[#2d2c2b] hover:border-[#2d2c2b] transition-all duration-150">
+            className="w-9 h-9 rounded-xl flex items-center justify-center border border-text-primary bg-text-primary text-bg hover:bg-text-primary/90 hover:border-text-primary/90 transition-all duration-150">
             <ExternalLink size={14} />
           </a>
         </div>

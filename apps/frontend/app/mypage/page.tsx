@@ -54,7 +54,7 @@ export default function MyPage() {
           </div>
         </div>
         <Link href="/services/new"
-          className="px-5 py-2.5 rounded-xl text-[13.5px] font-semibold bg-[#1A1918] text-white hover:bg-[#2d2c2b] transition-all">
+          className="px-5 py-2.5 rounded-xl text-[13.5px] font-semibold bg-text-primary text-bg hover:bg-text-primary/90 transition-all">
           + 서비스 등록
         </Link>
       </div>
@@ -79,7 +79,7 @@ export default function MyPage() {
             {tab === '내 서비스' && (
               <div className="absolute top-3 right-3 flex items-center gap-1.5 opacity-0 group-hover/item:opacity-100 transition-opacity z-10">
                 <Link href={`/services/${s.id}/edit`}
-                  className="w-8 h-8 rounded-xl flex items-center justify-center bg-card border border-border text-text-secondary hover:bg-[#1A1918] hover:border-[#1A1918] hover:text-white transition-all shadow-sm"
+                  className="w-8 h-8 rounded-xl flex items-center justify-center bg-card border border-border text-text-secondary hover:bg-text-primary hover:border-text-primary hover:text-bg transition-all shadow-sm"
                   title="수정">
                   <Pencil size={13} />
                 </Link>
@@ -89,7 +89,7 @@ export default function MyPage() {
                     await api.delete(`/services/${s.id}`);
                     setItems((prev) => prev.filter((x) => x.id !== s.id));
                   }}
-                  className="w-8 h-8 rounded-xl flex items-center justify-center bg-card border border-border text-text-secondary hover:bg-[#F5D4D4] hover:border-[#D43B3B] hover:text-[#D43B3B] transition-all shadow-sm"
+                  className="w-8 h-8 rounded-xl flex items-center justify-center bg-card border border-border text-text-secondary hover:bg-danger/15 hover:border-danger hover:text-danger transition-all shadow-sm"
                   title="삭제">
                   <Trash2 size={13} />
                 </button>

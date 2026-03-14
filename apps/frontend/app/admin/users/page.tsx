@@ -65,14 +65,14 @@ export default function AdminUsersPage() {
       <div className="flex-1 p-8">
         <h1 className="text-2xl font-bold mb-6">회원 관리</h1>
         {error && (
-          <div className="mb-4 px-4 py-3 bg-red-100 text-danger text-sm rounded">
+          <div className="mb-4 px-4 py-3 bg-danger/15 text-danger text-sm rounded">
             {error}
           </div>
         )}
         {loading ? (
           <div className="text-center py-16 text-text-secondary text-sm">불러오는 중...</div>
         ) : (
-          <div className="bg-white border border-border rounded-lg overflow-hidden">
+          <div className="bg-card border border-border rounded-lg overflow-hidden">
             <table className="w-full">
               <thead className="bg-bg text-xs text-text-secondary font-semibold">
                 <tr>
@@ -87,7 +87,7 @@ export default function AdminUsersPage() {
                     <td className="px-5 py-3.5 text-sm font-medium">{u.nickname}</td>
                     <td className="px-5 py-3.5 text-sm text-text-secondary">{u.email}</td>
                     <td className="px-5 py-3.5">
-                      <span className={`text-xs px-2 py-1 rounded font-semibold ${u.isBlocked ? 'bg-red-100 text-danger' : 'bg-accent-green text-black'}`}>
+                      <span className={`text-xs px-2 py-1 rounded font-semibold ${u.isBlocked ? 'bg-danger/15 text-danger' : 'bg-accent-green text-black'}`}>
                         {u.isBlocked ? '차단' : '활성'}
                       </span>
                     </td>

@@ -67,14 +67,14 @@ export default function AdminServicesPage() {
       <div className="flex-1 p-8">
         <h1 className="text-2xl font-bold mb-6">서비스 관리</h1>
         {error && (
-          <div className="mb-4 px-4 py-3 bg-red-100 text-danger text-sm rounded">
+          <div className="mb-4 px-4 py-3 bg-danger/15 text-danger text-sm rounded">
             {error}
           </div>
         )}
         {loading ? (
           <div className="text-center py-16 text-text-secondary text-sm">불러오는 중...</div>
         ) : (
-          <div className="bg-white border border-border rounded-lg overflow-hidden">
+          <div className="bg-card border border-border rounded-lg overflow-hidden">
             <table className="w-full">
               <thead className="bg-bg text-xs text-text-secondary font-semibold">
                 <tr>
@@ -91,7 +91,7 @@ export default function AdminServicesPage() {
                     <td className="px-4 py-3.5 text-xs text-text-secondary">{s.category?.name ?? '-'}</td>
                     <td className="px-4 py-3.5 text-sm font-medium">▲ {s.likeCount}</td>
                     <td className="px-4 py-3.5">
-                      <span className={`text-xs px-2 py-1 rounded font-semibold ${s.isHidden ? 'bg-red-100 text-danger' : 'bg-accent-green text-black'}`}>
+                      <span className={`text-xs px-2 py-1 rounded font-semibold ${s.isHidden ? 'bg-danger/15 text-danger' : 'bg-accent-green text-black'}`}>
                         {s.isHidden ? '숨김' : '공개'}
                       </span>
                     </td>

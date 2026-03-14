@@ -59,7 +59,7 @@ export default function LoginPage() {
               <p className="text-[13px] text-danger bg-danger/10 px-4 py-2.5 rounded-xl">{error}</p>
             )}
             <button type="submit"
-              className="w-full bg-[#1A1918] text-white py-3.5 rounded-xl text-[14.5px] font-semibold mt-1 hover:bg-[#2d2c2b] transition-all">
+              className="w-full bg-text-primary text-bg py-3.5 rounded-xl text-[14.5px] font-semibold mt-1 hover:bg-text-primary/90 transition-all">
               로그인
             </button>
           </form>

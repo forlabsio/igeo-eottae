@@ -85,7 +85,7 @@ export default function ServicesPage() {
                 />
               </form>
               <Link href="/services/new"
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[13px] font-semibold bg-[#1A1918] text-white hover:bg-[#2d2c2b] transition-all whitespace-nowrap">
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[13px] font-semibold bg-text-primary text-bg hover:bg-text-primary/90 transition-all whitespace-nowrap">
                 <Plus size={14} />
                 등록하기
               </Link>
@@ -104,8 +104,8 @@ export default function ServicesPage() {
               onClick={() => { setCategory(label); setPage(1); }}
               className={`w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-150 ${
                 category === label
-                  ? 'bg-[#1A1918] text-white border-[#1A1918]'
-                  : 'bg-card border-border text-text-secondary hover:text-text-primary hover:border-[#1A1918]/40 hover:bg-[#1A1918]/5'
+                  ? 'bg-text-primary text-bg border-text-primary'
+                  : 'bg-card border-border text-text-secondary hover:text-text-primary hover:border-text-primary/30 hover:bg-white/5'
               }`}>
               <Icon size={15} />
             </button>
@@ -120,8 +120,8 @@ export default function ServicesPage() {
                 onClick={() => { setSort(value); setPage(1); }}
                 className={`w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-150 ${
                   sort === value
-                    ? 'bg-[#1A1918] text-white border-[#1A1918]'
-                    : 'bg-card border-border text-text-secondary hover:text-text-primary hover:border-[#1A1918]/40 hover:bg-[#1A1918]/5'
+                    ? 'bg-text-primary text-bg border-text-primary'
+                    : 'bg-card border-border text-text-secondary hover:text-text-primary hover:border-text-primary/30 hover:bg-white/5'
                 }`}>
                 <Icon size={14} />
               </button>
@@ -159,7 +159,7 @@ export default function ServicesPage() {
               return (
                 <button key={p} onClick={() => setPage(p)}
                   className={`w-9 h-9 border rounded-xl text-[13px] font-semibold transition-all ${
-                    p === page ? 'bg-[#1A1918] text-white border-[#1A1918]' : 'border-border text-text-secondary hover:bg-border/40'
+                    p === page ? 'bg-text-primary text-bg border-text-primary' : 'border-border text-text-secondary hover:bg-border/40'
                   }`}>
                   {p}
                 </button>

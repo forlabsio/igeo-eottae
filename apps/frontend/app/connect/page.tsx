@@ -20,9 +20,9 @@ interface Inquiry {
 }
 
 const STATUS_MAP = {
-  pending:  { label: '대기중',  icon: Clock,        color: 'text-[#D4903B] bg-[#F5E8D4]' },
-  accepted: { label: '수락됨',  icon: CheckCircle,  color: 'text-[#5c7a00] bg-[#E8F5D4]' },
-  rejected: { label: '거절됨',  icon: XCircle,      color: 'text-[#D43B3B] bg-[#F5D4D4]' },
+  pending:  { label: '대기중',  icon: Clock,        color: 'text-[#D4903B] bg-[#2E1E0A]' },
+  accepted: { label: '수락됨',  icon: CheckCircle,  color: 'text-accent-green bg-[#1D2E10]' },
+  rejected: { label: '거절됨',  icon: XCircle,      color: 'text-danger bg-danger/15' },
 };
 
 function InquiryCard({ item, tab, onAction }: { item: Inquiry; tab: 'received' | 'sent'; onAction: () => void }) {
@@ -57,10 +57,10 @@ function InquiryCard({ item, tab, onAction }: { item: Inquiry; tab: 'received' |
 
       {/* 수락 시 이메일 공개 */}
       {item.status === 'accepted' && partnerEmail && (
-        <div className="flex items-center gap-2 bg-[#E8F5D4] border border-[#ADFA1D]/40 rounded-xl px-3.5 py-2.5">
-          <Mail size={13} className="text-[#5c7a00] flex-shrink-0" />
+        <div className="flex items-center gap-2 bg-[#1D2E10] border border-accent-green/30 rounded-xl px-3.5 py-2.5">
+          <Mail size={13} className="text-accent-green flex-shrink-0" />
           <div>
-            <p className="text-[11px] text-[#5c7a00] font-bold">연결 이메일</p>
+            <p className="text-[11px] text-accent-green font-bold">연결 이메일</p>
             <p className="text-[13px] font-semibold text-text-primary">{partnerEmail}</p>
           </div>
         </div>
@@ -70,11 +70,11 @@ function InquiryCard({ item, tab, onAction }: { item: Inquiry; tab: 'received' |
       {tab === 'received' && item.status === 'pending' && (
         <div className="flex gap-2">
           <button onClick={accept}
-            className="flex-1 py-2 rounded-xl text-[13px] font-semibold bg-[#1A1918] text-white hover:bg-[#2d2c2b] transition-all">
+            className="flex-1 py-2 rounded-xl text-[13px] font-semibold bg-text-primary text-bg hover:bg-text-primary/90 transition-all">
             수락하기
           </button>
           <button onClick={reject}
-            className="flex-1 py-2 rounded-xl text-[13px] font-semibold border border-border text-text-secondary hover:bg-bg transition-all">
+            className="flex-1 py-2 rounded-xl text-[13px] font-semibold border border-border text-text-secondary hover:bg-card-elevated transition-all">
             거절하기
           </button>
         </div>
@@ -120,7 +120,7 @@ export default function ConnectPage() {
       <div className="max-w-[720px] mx-auto px-6 py-8">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-9 h-9 bg-[#1A1918] rounded-xl flex items-center justify-center">
+          <div className="w-9 h-9 bg-card-elevated border border-border rounded-xl flex items-center justify-center">
             <Handshake size={16} className="text-accent-green" />
           </div>
           <div>
@@ -134,7 +134,7 @@ export default function ConnectPage() {
           {([['received', '받은 문의'], ['sent', '보낸 문의']] as const).map(([val, label]) => (
             <button key={val} onClick={() => setTab(val)}
               className={`relative flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-semibold transition-all ${
-                tab === val ? 'bg-[#1A1918] text-white' : 'text-text-secondary hover:text-text-primary'
+                tab === val ? 'bg-text-primary text-bg' : 'text-text-secondary hover:text-text-primary'
               }`}>
               {label}
               {val === 'received' && pending > 0 && (

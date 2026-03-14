@@ -108,8 +108,8 @@ export default function NewServicePage() {
                   <button key={slug} type="button" onClick={() => toggleRegion(slug)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[12.5px] font-semibold border transition-all duration-150 ${
                       on
-                        ? 'bg-[#1A1918] text-white border-[#1A1918]'
-                        : 'bg-bg border-border text-text-secondary hover:border-[#1A1918]/40 hover:text-text-primary'
+                        ? 'bg-text-primary text-bg border-text-primary'
+                        : 'bg-bg border-border text-text-secondary hover:border-text-primary/30 hover:text-text-primary'
                     }`}>
                     <span>{flag}</span> {label}
                   </button>
@@ -126,7 +126,7 @@ export default function NewServicePage() {
               취소
             </button>
             <button type="submit"
-              className="px-6 py-2.5 rounded-xl text-[14px] font-semibold bg-[#1A1918] text-white hover:bg-[#2d2c2b] transition-all">
+              className="px-6 py-2.5 rounded-xl text-[14px] font-semibold bg-text-primary text-bg hover:bg-text-primary/90 transition-all">
               등록하기
             </button>
           </div>

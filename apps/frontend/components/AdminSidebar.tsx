@@ -18,7 +18,7 @@ export default function AdminSidebar() {
         <Link key={m.href} href={m.href}
           className={`flex items-center px-3 py-2.5 rounded-xl text-[13.5px] font-medium mb-1 transition-all ${
             path === m.href
-              ? 'bg-[#1A1918] text-white'
+              ? 'bg-text-primary text-bg'
               : 'text-text-secondary hover:text-text-primary hover:bg-border/60'
           }`}>
           {m.label}

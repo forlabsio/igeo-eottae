@@ -63,7 +63,7 @@ export default function BookmarksPage() {
             <button key={cat} onClick={() => setCategory(cat)}
               className={`px-4 py-1.5 rounded-full text-[13px] font-medium transition-all duration-150 border ${
                 category === cat
-                  ? 'bg-[#1A1918] text-white border-[#1A1918]'
+                  ? 'bg-text-primary text-bg border-text-primary'
                   : 'bg-card border-border text-text-secondary hover:border-text-secondary hover:text-text-primary'
               }`}>
               {cat}

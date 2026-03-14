@@ -28,14 +28,14 @@ export default function Navbar() {
         setPendingCount(data.filter((i: { status: string }) => i.status === 'pending').length);
       })
       .catch(() => {});
-  }, [user, path]); // path 변경 시(connect 페이지 방문 후) 재조회
+  }, [user, path]);
 
   const navLink = (href: string, label: string) => {
     const active = path === href || (href !== '/' && path.startsWith(href));
     return (
       <Link href={href}
         className={`px-4 py-1.5 rounded-lg text-[13.5px] font-medium transition-all duration-150 ${
-          active ? 'bg-[#1A1918] text-white' : 'text-text-secondary hover:text-text-primary hover:bg-border/60'
+          active ? 'bg-text-primary text-bg' : 'text-text-secondary hover:text-text-primary hover:bg-border/60'
         }`}>
         {label}
       </Link>
@@ -67,8 +67,8 @@ export default function Navbar() {
                 title="Connect — 사업 문의"
                 className={`relative w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-150 ${
                   path === '/connect'
-                    ? 'bg-[#1A1918] text-white border-[#1A1918]'
-                    : 'bg-card border-border text-text-secondary hover:text-text-primary hover:border-[#1A1918]/40 hover:bg-[#1A1918]/5'
+                    ? 'bg-text-primary text-bg border-text-primary'
+                    : 'bg-card border-border text-text-secondary hover:text-text-primary hover:border-text-primary/30 hover:bg-white/5'
                 }`}>
                 <Handshake size={15} />
                 {pendingCount > 0 && (
@@ -83,8 +83,8 @@ export default function Navbar() {
                 title="관심목록"
                 className={`w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-150 ${
                   path === '/bookmarks'
-                    ? 'bg-[#1A1918] text-white border-[#1A1918]'
-                    : 'bg-card border-border text-text-secondary hover:text-text-primary hover:border-[#1A1918]/40 hover:bg-[#1A1918]/5'
+                    ? 'bg-text-primary text-bg border-text-primary'
+                    : 'bg-card border-border text-text-secondary hover:text-text-primary hover:border-text-primary/30 hover:bg-white/5'
                 }`}>
                 <Bookmark size={15} />
               </Link>
@@ -101,7 +101,7 @@ export default function Navbar() {
                 </button>
 
                 {dropOpen && (
-                  <div className="absolute right-0 top-[calc(100%+6px)] w-[180px] bg-card border border-border rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] py-1.5 z-50">
+                  <div className="absolute right-0 top-[calc(100%+6px)] w-[180px] bg-card border border-border rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.50)] py-1.5 z-50">
                     <div className="px-4 py-2 border-b border-border mb-1">
                       <p className="text-[11px] text-text-secondary/60 font-medium">로그인 계정</p>
                       <p className="text-[13px] font-bold text-text-primary truncate">@{user.nickname}</p>
@@ -133,7 +133,7 @@ export default function Navbar() {
                 로그인
               </Link>
               <Link href="/register"
-                className="px-4 py-2 rounded-lg text-[13.5px] font-semibold bg-[#1A1918] text-white hover:bg-[#2d2c2b] transition-all">
+                className="px-4 py-2 rounded-lg text-[13.5px] font-semibold bg-text-primary text-bg hover:bg-text-primary/90 transition-all">
                 회원가입
               </Link>
             </>

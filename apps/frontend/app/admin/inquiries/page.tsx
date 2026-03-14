@@ -19,9 +19,9 @@ interface AdminInquiry {
 }
 
 const STATUS_MAP = {
-  pending:  { label: '대기중', icon: Clock,       color: 'text-[#D4903B] bg-[#F5E8D4]' },
-  accepted: { label: '수락됨', icon: CheckCircle, color: 'text-[#5c7a00] bg-[#E8F5D4]' },
-  rejected: { label: '거절됨', icon: XCircle,     color: 'text-[#D43B3B] bg-[#F5D4D4]' },
+  pending:  { label: '대기중', icon: Clock,       color: 'text-[#D4903B] bg-[#2E1E0A]' },
+  accepted: { label: '수락됨', icon: CheckCircle, color: 'text-accent-green bg-[#1D2E10]' },
+  rejected: { label: '거절됨', icon: XCircle,     color: 'text-danger bg-danger/15' },
 };
 
 export default function AdminInquiriesPage() {
@@ -60,8 +60,8 @@ export default function AdminInquiriesPage() {
       <AdminSidebar />
       <div className="flex-1 p-8 max-w-[900px]">
         <div className="flex items-center gap-3 mb-7">
-          <div className="w-9 h-9 bg-[#1A1918] rounded-xl flex items-center justify-center">
-            <Handshake size={16} className="text-white" />
+          <div className="w-9 h-9 bg-card-elevated border border-border rounded-xl flex items-center justify-center">
+            <Handshake size={16} className="text-accent-green" />
           </div>
           <div>
             <h1 className="text-[22px] font-extrabold text-text-primary leading-none">문의 관리</h1>
@@ -101,7 +101,7 @@ export default function AdminInquiriesPage() {
                         <StIcon size={11} /> {st.label}
                       </span>
                       <button onClick={() => del(item.id)}
-                        className="w-8 h-8 rounded-xl flex items-center justify-center border border-border text-text-secondary hover:bg-[#F5D4D4] hover:border-[#D43B3B] hover:text-[#D43B3B] transition-all">
+                        className="w-8 h-8 rounded-xl flex items-center justify-center border border-border text-text-secondary hover:bg-danger/15 hover:border-danger hover:text-danger transition-all">
                         <Trash2 size={13} />
                       </button>
                     </div>
