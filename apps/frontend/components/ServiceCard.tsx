@@ -1,6 +1,8 @@
 'use client';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import LikeButton from './LikeButton';
+import { useAuth } from '@/contexts/AuthContext';
 import { ExternalLink, User } from 'lucide-react';
 
 interface ServiceItem {
@@ -24,10 +26,19 @@ const PALETTE = [
 ];
 
 export default function ServiceCard({ service }: { service: ServiceItem }) {
+  const { user } = useAuth();
+  const router = useRouter();
   const idx = service.name.charCodeAt(0) % PALETTE.length;
   const { bg, accent } = PALETTE[idx];
   const initials = service.name.slice(0, 2).toUpperCase();
   const catIcon = service.categoryName ? (CATEGORY_ICONS[service.categoryName] ?? '📦') : '📦';
+
+  const handleExternalLink = (e: React.MouseEvent) => {
+    if (!user) {
+      e.preventDefault();
+      router.push('/register?reason=link');
+    }
+  };
 
   return (
     <div className="group bg-card border border-border rounded-2xl overflow-hidden hover:border-[#1A1918]/30 hover:shadow-[0_8px_32px_rgba(0,0,0,0.10)] transition-all duration-200 flex flex-col">
@@ -72,6 +83,7 @@ export default function ServiceCard({ service }: { service: ServiceItem }) {
         <div className="flex items-center gap-2">
           <LikeButton serviceId={service.id} count={service.likeCount} isLiked={service.isLiked} size="lg" />
           <a href={service.url} target="_blank" rel="noopener noreferrer"
+            onClick={handleExternalLink}
             className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#1A1918] text-white hover:bg-[#2d2c2b] transition-all duration-150">
             <ExternalLink size={13} />
           </a>

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { Service } from '../entities/service.entity';
+import { Like } from '../entities/like.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -14,7 +15,19 @@ export class AdminController {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Service) private serviceRepo: Repository<Service>,
+    @InjectRepository(Like) private likeRepo: Repository<Like>,
   ) {}
+
+  @Get('stats')
+  async getStats() {
+    const [totalUsers, totalServices, totalLikes, blockedUsers] = await Promise.all([
+      this.userRepo.count(),
+      this.serviceRepo.count(),
+      this.likeRepo.count(),
+      this.userRepo.count({ where: { isBlocked: true } }),
+    ]);
+    return { totalUsers, totalServices, totalLikes, blockedUsers };
+  }
 
   @Get('users')
   getUsers(@Query('page') page = 1, @Query('limit') limit = 20) {

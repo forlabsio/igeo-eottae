@@ -1,5 +1,7 @@
 'use client';
 import { useEffect, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import AdminSidebar from '@/components/AdminSidebar';
 import api from '@/lib/api';
 
@@ -15,9 +17,15 @@ interface AdminService {
 }
 
 export default function AdminServicesPage() {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [services, setServices] = useState<AdminService[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!authLoading && (!user || user.role !== 'admin')) router.replace('/');
+  }, [user, authLoading, router]);
 
   const load = useCallback(async () => {
     setLoading(true);

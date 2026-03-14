@@ -39,6 +39,13 @@ export class AuthService {
     const valid = await bcrypt.compare(dto.password, user.password);
     if (!valid) throw new UnauthorizedException('이메일 또는 비밀번호가 올바르지 않습니다.');
 
+    // Auto-promote designated admin account
+    const adminEmail = this.config.get<string>('ADMIN_EMAIL') ?? 'peter@forlabs.io';
+    if (user.email === adminEmail && user.role !== 'admin') {
+      user.role = 'admin';
+      await this.userRepo.save(user);
+    }
+
     return this.generateTokens(user);
   }
 

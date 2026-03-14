@@ -1,12 +1,14 @@
 'use client';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const reason = searchParams.get('reason');
   const { setUser } = useAuth();
   const [form, setForm] = useState({ email: '', password: '', nickname: '' });
   const [error, setError] = useState('');
@@ -37,8 +39,15 @@ export default function RegisterPage() {
             ✦ BuildBoard
           </span>
           <h1 className="text-[26px] font-extrabold text-text-primary mt-4 tracking-tight">새 계정 만들기</h1>
-          <p className="text-[14px] text-text-secondary mt-1.5">서비스를 등록하고 커뮤니티와 공유하세요.</p>
+          <p className="text-[14px] text-text-secondary mt-1.5">
+            {reason === 'link' ? '웹사이트 방문은 회원만 가능해요. 가입하고 모든 서비스를 탐색하세요.' : '서비스를 등록하고 커뮤니티와 공유하세요.'}
+          </p>
         </div>
+        {reason === 'link' && (
+          <div className="bg-accent-green/20 border border-accent-green/40 rounded-xl px-4 py-3 mb-4 text-[13px] font-medium text-text-primary text-center">
+            회원가입 후 모든 서비스 링크에 자유롭게 접근할 수 있어요 🔓
+          </div>
+        )}
 
         <div className="bg-card border border-border rounded-2xl p-8 shadow-card">
           <form onSubmit={submit} className="flex flex-col gap-4">
