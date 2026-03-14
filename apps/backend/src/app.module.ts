@@ -8,11 +8,13 @@ import { Service } from './entities/service.entity';
 import { Like } from './entities/like.entity';
 import { Bookmark } from './entities/bookmark.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
+import { Inquiry } from './entities/inquiry.entity';
 import { AuthModule } from './auth/auth.module';
 import { ServicesModule } from './services/services.module';
 import { UsersModule } from './users/users.module';
 import { AdminModule } from './admin/admin.module';
 import { CategoriesModule } from './categories/categories.module';
+import { InquiriesModule } from './inquiries/inquiries.module';
 
 const SEED_CATEGORIES = [
   { name: 'AI/ML', slug: 'ai-ml' },
@@ -32,7 +34,7 @@ const SEED_CATEGORIES = [
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
         url: config.get('DATABASE_URL'),
-        entities: [User, Category, Service, Like, Bookmark, RefreshToken],
+        entities: [User, Category, Service, Like, Bookmark, RefreshToken, Inquiry],
         synchronize: config.get('NODE_ENV') !== 'production' || config.get('TYPEORM_SYNC') === 'true',
         logging: config.get('NODE_ENV') === 'development',
       }),
@@ -43,6 +45,7 @@ const SEED_CATEGORIES = [
     UsersModule,
     AdminModule,
     CategoriesModule,
+    InquiriesModule,
   ],
 })
 export class AppModule implements OnApplicationBootstrap {

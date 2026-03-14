@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const PROTECTED = ['/mypage', '/services/new', '/admin', '/bookmarks'];
+const PROTECTED = ['/mypage', '/services/new', '/admin', '/bookmarks', '/connect'];
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('accessToken')?.value;
@@ -11,4 +11,4 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-export const config = { matcher: ['/mypage/:path*', '/services/new', '/admin/:path*', '/bookmarks'] };
+export const config = { matcher: ['/mypage/:path*', '/services/new', '/admin/:path*', '/bookmarks', '/connect'] };

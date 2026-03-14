@@ -40,6 +40,9 @@ export class Service {
   @Column({ default: false })
   isHidden: boolean;
 
+  @Column({ type: 'simple-array', nullable: true })
+  targetRegions: string[] | null;
+
   @OneToMany(() => Like, (l) => l.service)
   likes: Like[];
 

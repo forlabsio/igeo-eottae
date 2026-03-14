@@ -3,14 +3,18 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { REGION_MAP } from '@/components/ServiceCard';
 
 interface Category { id: string; name: string; slug: string; }
+
+const REGIONS = Object.entries(REGION_MAP).map(([slug, { flag, label }]) => ({ slug, flag, label }));
 
 export default function NewServicePage() {
   const router = useRouter();
   const { user, loading } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [form, setForm] = useState({ name: '', description: '', url: '', categoryId: '' });
+  const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -21,11 +25,21 @@ export default function NewServicePage() {
     api.get('/categories').then(({ data }) => setCategories(data)).catch(() => {});
   }, []);
 
+  const toggleRegion = (slug: string) => {
+    setSelectedRegions((prev) =>
+      prev.includes(slug) ? prev.filter((r) => r !== slug) : [...prev, slug]
+    );
+  };
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     try {
-      const payload = { ...form, categoryId: form.categoryId || undefined };
+      const payload = {
+        ...form,
+        categoryId: form.categoryId || undefined,
+        targetRegions: selectedRegions.length > 0 ? selectedRegions : undefined,
+      };
       const { data } = await api.post('/services', payload);
       router.push(`/services/${data.id}`);
     } catch (err: unknown) {
@@ -80,6 +94,28 @@ export default function NewServicePage() {
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
+          </div>
+
+          {/* Target regions */}
+          <div>
+            <label className="text-[13px] font-semibold text-text-primary mb-2 block">
+              타겟 지역 <span className="text-text-secondary font-normal">(선택, 복수 가능)</span>
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {REGIONS.map(({ slug, flag, label }) => {
+                const on = selectedRegions.includes(slug);
+                return (
+                  <button key={slug} type="button" onClick={() => toggleRegion(slug)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[12.5px] font-semibold border transition-all duration-150 ${
+                      on
+                        ? 'bg-[#1A1918] text-white border-[#1A1918]'
+                        : 'bg-bg border-border text-text-secondary hover:border-[#1A1918]/40 hover:text-text-primary'
+                    }`}>
+                    <span>{flag}</span> {label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {error && <p className="text-[13px] text-danger bg-danger/10 px-4 py-2.5 rounded-xl">{error}</p>}

@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { Handshake } from 'lucide-react';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -39,6 +40,12 @@ export default function Navbar() {
         <div className="flex-1 flex items-center justify-end gap-2.5">
           {user ? (
             <>
+              <Link href="/connect"
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[13px] font-medium transition-all ${
+                  path === '/connect' ? 'bg-[#E8F5D4] text-[#5c7a00]' : 'text-text-secondary hover:text-text-primary hover:bg-border/60'
+                }`}>
+                <Handshake size={14} /> Connect
+              </Link>
               <Link href="/bookmarks"
                 className={`px-3.5 py-1.5 rounded-lg text-[13px] font-medium transition-all ${
                   path === '/bookmarks' ? 'bg-accent-green text-black' : 'text-text-secondary hover:text-text-primary hover:bg-border/60'

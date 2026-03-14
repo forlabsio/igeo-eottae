@@ -6,6 +6,7 @@ const menus = [
   { label: '대시보드', href: '/admin' },
   { label: '회원 관리', href: '/admin/users' },
   { label: '서비스 관리', href: '/admin/services' },
+  { label: '문의 관리', href: '/admin/inquiries' },
 ];
 
 export default function AdminSidebar() {

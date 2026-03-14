@@ -3,17 +3,30 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import LikeButton from './LikeButton';
 import { useAuth } from '@/contexts/AuthContext';
-import { ExternalLink, User } from 'lucide-react';
+import { ExternalLink, User, Handshake } from 'lucide-react';
 
 interface ServiceItem {
   id: string; name: string; description: string; url: string; imageUrl?: string;
   likeCount: number; isHidden: boolean; categoryId?: string; categoryName?: string;
-  userId: string; userNickname?: string; isLiked?: boolean; isBookmarked?: boolean; createdAt: string;
+  userId: string; userNickname?: string; isLiked?: boolean; isBookmarked?: boolean;
+  createdAt: string; targetRegions?: string[] | null;
 }
 
 const CATEGORY_ICONS: Record<string, string> = {
   'AI/ML': '⚡', 'SaaS': '☁️', '개발툴': '🛠', '핀테크': '💳',
   '마케팅': '📢', '커머스': '🛍', '기타': '📦',
+};
+
+export const REGION_MAP: Record<string, { flag: string; label: string }> = {
+  'kr':             { flag: '🇰🇷', label: '한국' },
+  'east-asia':      { flag: '🌏', label: '동아시아' },
+  'southeast-asia': { flag: '🌴', label: '동남아시아' },
+  'europe':         { flag: '🌍', label: '유럽' },
+  'north-america':  { flag: '🌎', label: '북미' },
+  'south-america':  { flag: '🌎', label: '남미' },
+  'middle-east':    { flag: '🌙', label: '중동' },
+  'africa':         { flag: '🌍', label: '아프리카' },
+  'global':         { flag: '🌐', label: '글로벌' },
 };
 
 const PALETTE = [
@@ -32,12 +45,17 @@ export default function ServiceCard({ service }: { service: ServiceItem }) {
   const { bg, accent } = PALETTE[idx];
   const initials = service.name.slice(0, 2).toUpperCase();
   const catIcon = service.categoryName ? (CATEGORY_ICONS[service.categoryName] ?? '📦') : '📦';
+  const regions = service.targetRegions?.slice(0, 2) ?? [];
+  const extraRegions = (service.targetRegions?.length ?? 0) - 2;
 
   const handleExternalLink = (e: React.MouseEvent) => {
-    if (!user) {
-      e.preventDefault();
-      router.push('/register?reason=link');
-    }
+    if (!user) { e.preventDefault(); router.push('/register?reason=link'); }
+  };
+
+  const handleConnect = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!user) { router.push('/register?reason=connect'); return; }
+    router.push(`/services/${service.id}?connect=1`);
   };
 
   return (
@@ -50,8 +68,8 @@ export default function ServiceCard({ service }: { service: ServiceItem }) {
             <span>{catIcon}</span> {service.categoryName}
           </span>
         )}
-        {/* Logo floats half out */}
-        <div className={`w-14 h-14 rounded-2xl border-2 border-white shadow-md flex items-center justify-center overflow-hidden translate-y-7 bg-white`}
+        {/* Logo */}
+        <div className="w-14 h-14 rounded-2xl border-2 border-white shadow-md flex items-center justify-center overflow-hidden translate-y-7 bg-white"
           style={{ boxShadow: `0 4px 16px ${accent}30` }}>
           {service.imageUrl ? (
             <img src={service.imageUrl} alt={service.name} className="w-full h-full object-cover" />
@@ -62,16 +80,30 @@ export default function ServiceCard({ service }: { service: ServiceItem }) {
       </div>
 
       {/* Body */}
-      <div className="flex flex-col flex-1 px-4 pt-10 pb-4 gap-1">
-        <div className="flex items-start justify-between gap-2">
-          <Link href={`/services/${service.id}`}
-            className="font-bold text-[15px] text-text-primary hover:text-text-primary/60 transition-colors leading-tight line-clamp-1">
-            {service.name}
-          </Link>
-        </div>
+      <div className="flex flex-col flex-1 px-4 pt-10 pb-3 gap-1">
+        <Link href={`/services/${service.id}`}
+          className="font-bold text-[15px] text-text-primary hover:text-text-primary/60 transition-colors leading-tight line-clamp-1">
+          {service.name}
+        </Link>
         <p className="text-[12.5px] text-text-secondary leading-relaxed line-clamp-2 min-h-[36px]">
           {service.description}
         </p>
+
+        {/* Region badges */}
+        {regions.length > 0 && (
+          <div className="flex items-center gap-1 mt-1 flex-wrap">
+            {regions.map((r) => (
+              <span key={r} className="inline-flex items-center gap-0.5 text-[11px] bg-bg border border-border rounded-full px-2 py-0.5 text-text-secondary">
+                {REGION_MAP[r]?.flag} {REGION_MAP[r]?.label}
+              </span>
+            ))}
+            {extraRegions > 0 && (
+              <span className="text-[11px] bg-bg border border-border rounded-full px-2 py-0.5 text-text-secondary">
+                +{extraRegions}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Footer */}
@@ -80,8 +112,16 @@ export default function ServiceCard({ service }: { service: ServiceItem }) {
           <User size={11} />
           <span>@{service.userNickname}</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <LikeButton serviceId={service.id} count={service.likeCount} isLiked={service.isLiked} size="lg" />
+          {/* Connect 버튼 (본인 서비스 제외) */}
+          {(!user || user.id !== service.userId) && (
+            <button onClick={handleConnect}
+              title="사업 문의 보내기"
+              className="w-8 h-8 rounded-xl flex items-center justify-center border border-border text-text-secondary hover:bg-[#E8F5D4] hover:border-[#7CC71A] hover:text-[#5c7a00] transition-all duration-150">
+              <Handshake size={13} />
+            </button>
+          )}
           <a href={service.url} target="_blank" rel="noopener noreferrer"
             onClick={handleExternalLink}
             className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#1A1918] text-white hover:bg-[#2d2c2b] transition-all duration-150">

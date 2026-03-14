@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { Service } from '../entities/service.entity';
 import { Like } from '../entities/like.entity';
+import { Inquiry } from '../entities/inquiry.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -16,17 +17,19 @@ export class AdminController {
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Service) private serviceRepo: Repository<Service>,
     @InjectRepository(Like) private likeRepo: Repository<Like>,
+    @InjectRepository(Inquiry) private inquiryRepo: Repository<Inquiry>,
   ) {}
 
   @Get('stats')
   async getStats() {
-    const [totalUsers, totalServices, totalLikes, blockedUsers] = await Promise.all([
+    const [totalUsers, totalServices, totalLikes, blockedUsers, totalInquiries] = await Promise.all([
       this.userRepo.count(),
       this.serviceRepo.count(),
       this.likeRepo.count(),
       this.userRepo.count({ where: { isBlocked: true } }),
+      this.inquiryRepo.count(),
     ]);
-    return { totalUsers, totalServices, totalLikes, blockedUsers };
+    return { totalUsers, totalServices, totalLikes, blockedUsers, totalInquiries };
   }
 
   @Get('users')
@@ -71,5 +74,20 @@ export class AdminController {
   @Delete('services/:id')
   deleteService(@Param('id') id: string) {
     return this.serviceRepo.delete(id);
+  }
+
+  @Get('inquiries')
+  getInquiries(@Query('page') page = 1, @Query('limit') limit = 30) {
+    return this.inquiryRepo.findAndCount({
+      relations: ['sender', 'receiver', 'service'],
+      order: { createdAt: 'DESC' },
+      skip: (Number(page) - 1) * Number(limit),
+      take: Number(limit),
+    });
+  }
+
+  @Delete('inquiries/:id')
+  deleteInquiry(@Param('id') id: string) {
+    return this.inquiryRepo.delete(id);
   }
 }
