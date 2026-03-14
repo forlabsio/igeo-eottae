@@ -9,7 +9,7 @@ export class UsersController {
 
   @Get('me')
   getMe(@Request() req) {
-    return req.user;
+    return this.usersService.getMe(req.user.id);
   }
 
   @Get('me/services')
