@@ -21,20 +21,22 @@ export default function Navbar() {
 
   return (
     <nav className="bg-card/90 backdrop-blur-md border-b border-border sticky top-0 z-50 h-[58px] flex items-center">
-      <div className="max-w-[1120px] w-full mx-auto px-8 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="text-[17px] font-bold tracking-tight text-text-primary">
-          BuildBoard
-        </Link>
+      <div className="max-w-[1120px] w-full mx-auto px-8 flex items-center">
+        {/* Logo - flex-1 so it takes equal space as right section */}
+        <div className="flex-1">
+          <Link href="/" className="text-[17px] font-bold tracking-tight text-text-primary">
+            BuildBoard
+          </Link>
+        </div>
 
-        {/* Center nav */}
+        {/* Center nav - truly centered */}
         <div className="flex items-center gap-1 bg-bg rounded-xl p-1 border border-border">
           {navLink('/', '홈')}
           {navLink('/services', '서비스 탐색')}
         </div>
 
-        {/* Right */}
-        <div className="flex items-center gap-2.5">
+        {/* Right - flex-1 with justify-end */}
+        <div className="flex-1 flex items-center justify-end gap-2.5">
           {user ? (
             <>
               <Link href="/bookmarks"
