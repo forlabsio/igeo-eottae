@@ -15,10 +15,11 @@ export default function NewServicePage() {
 
   useEffect(() => {
     if (!loading && !user) router.push('/login');
-    setCategories([
-      { id: '', name: '카테고리 선택 (선택사항)', slug: '' },
-    ]);
   }, [user, loading, router]);
+
+  useEffect(() => {
+    api.get('/categories').then(({ data }) => setCategories(data)).catch(() => {});
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,19 +67,18 @@ export default function NewServicePage() {
             <div>
               <label className="text-sm font-semibold mb-2 block">대표 이미지 URL (선택)</label>
               <input value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-                className="w-full border border-border rounded px-3.5 py-3 text-sm bg-bg" placeholder="https://cloudinary..." />
+                className="w-full border border-border rounded px-3.5 py-3 text-sm bg-bg" placeholder="https://..." />
             </div>
-            {categories.length > 0 && (
-              <div>
-                <label className="text-sm font-semibold mb-2 block">카테고리 (선택)</label>
-                <select value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
-                  className="w-full border border-border rounded px-3.5 py-3 text-sm bg-bg">
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </select>
-              </div>
-            )}
+            <div>
+              <label className="text-sm font-semibold mb-2 block">카테고리 (선택)</label>
+              <select value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
+                className="w-full border border-border rounded px-3.5 py-3 text-sm bg-bg">
+                <option value="">카테고리 선택</option>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
             {error && <p className="text-sm text-danger">{error}</p>}
             <div className="flex justify-end gap-3">
               <button type="button" onClick={() => router.back()} className="border border-border px-6 py-3 rounded text-sm text-text-secondary">취소</button>
