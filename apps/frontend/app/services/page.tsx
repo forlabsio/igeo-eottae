@@ -96,37 +96,37 @@ export default function ServicesPage() {
 
       <div className="max-w-[1120px] mx-auto px-8 py-6">
         {/* ── Category icon tabs ── */}
-        <div className="flex gap-1.5 flex-wrap mb-5">
+        <div className="flex items-center gap-1.5 flex-wrap mb-5">
           {CATEGORIES.map(({ label, icon: Icon }) => (
             <button
               key={label}
+              title={label}
               onClick={() => { setCategory(label); setPage(1); }}
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[12.5px] font-semibold transition-all duration-150 border ${
+              className={`w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-150 ${
                 category === label
-                  ? 'bg-[#1A1918] text-white border-[#1A1918] shadow-sm'
-                  : 'bg-card border-border text-text-secondary hover:text-text-primary hover:border-[#1A1918]/30 hover:bg-[#1A1918]/5'
+                  ? 'bg-[#1A1918] text-white border-[#1A1918]'
+                  : 'bg-card border-border text-text-secondary hover:text-text-primary hover:border-[#1A1918]/40 hover:bg-[#1A1918]/5'
               }`}>
-              <Icon size={13} className={category === label ? 'text-accent-green' : ''} />
-              {label}
+              <Icon size={15} />
             </button>
           ))}
-        </div>
 
-        {/* ── Sort tabs ── */}
-        <div className="flex items-center gap-1 mb-6 bg-card border border-border rounded-xl p-1 w-fit">
-          {SORTS.map(({ value, label, icon: Icon }) => (
-            <button
-              key={value}
-              onClick={() => { setSort(value); setPage(1); }}
-              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-[12.5px] font-semibold transition-all duration-150 ${
-                sort === value
-                  ? 'bg-accent-green text-black shadow-sm'
-                  : 'text-text-secondary hover:text-text-primary'
-              }`}>
-              <Icon size={12} />
-              {label}
-            </button>
-          ))}
+          {/* Sort — icon-only group */}
+          <div className="flex items-center gap-1.5 ml-auto">
+            {SORTS.map(({ value, label, icon: Icon }) => (
+              <button
+                key={value}
+                title={label}
+                onClick={() => { setSort(value); setPage(1); }}
+                className={`w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-150 ${
+                  sort === value
+                    ? 'bg-[#1A1918] text-white border-[#1A1918]'
+                    : 'bg-card border-border text-text-secondary hover:text-text-primary hover:border-[#1A1918]/40 hover:bg-[#1A1918]/5'
+                }`}>
+                <Icon size={14} />
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* ── Grid ── */}

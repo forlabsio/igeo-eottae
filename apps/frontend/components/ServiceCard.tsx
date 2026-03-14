@@ -118,14 +118,15 @@ export default function ServiceCard({ service }: { service: ServiceItem }) {
           {(!user || user.id !== service.userId) && (
             <button onClick={handleConnect}
               title="사업 문의 보내기"
-              className="w-8 h-8 rounded-xl flex items-center justify-center border border-border text-text-secondary hover:bg-[#E8F5D4] hover:border-[#7CC71A] hover:text-[#5c7a00] transition-all duration-150">
-              <Handshake size={13} />
+              className="w-9 h-9 rounded-xl flex items-center justify-center border border-border bg-card text-text-secondary hover:bg-[#1A1918] hover:border-[#1A1918] hover:text-white transition-all duration-150">
+              <Handshake size={14} />
             </button>
           )}
           <a href={service.url} target="_blank" rel="noopener noreferrer"
             onClick={handleExternalLink}
-            className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#1A1918] text-white hover:bg-[#2d2c2b] transition-all duration-150">
-            <ExternalLink size={13} />
+            title="서비스 방문"
+            className="w-9 h-9 rounded-xl flex items-center justify-center border border-[#1A1918] bg-[#1A1918] text-white hover:bg-[#2d2c2b] hover:border-[#2d2c2b] transition-all duration-150">
+            <ExternalLink size={14} />
           </a>
         </div>
       </div>

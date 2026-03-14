@@ -54,21 +54,21 @@ export default function Navbar() {
               {/* Connect icon btn */}
               <Link href="/connect"
                 title="Connect — 사업 문의"
-                className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-150 ${
+                className={`w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-150 ${
                   path === '/connect'
-                    ? 'bg-[#E8F5D4] text-[#5c7a00]'
-                    : 'text-text-secondary hover:text-text-primary hover:bg-border/60'
+                    ? 'bg-[#1A1918] text-white border-[#1A1918]'
+                    : 'bg-card border-border text-text-secondary hover:text-text-primary hover:border-[#1A1918]/40 hover:bg-[#1A1918]/5'
                 }`}>
-                <Handshake size={16} />
+                <Handshake size={15} />
               </Link>
 
               {/* Bookmark icon btn */}
               <Link href="/bookmarks"
                 title="관심목록"
-                className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-150 ${
+                className={`w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-150 ${
                   path === '/bookmarks'
-                    ? 'bg-accent-green text-black'
-                    : 'text-text-secondary hover:text-text-primary hover:bg-border/60'
+                    ? 'bg-[#1A1918] text-white border-[#1A1918]'
+                    : 'bg-card border-border text-text-secondary hover:text-text-primary hover:border-[#1A1918]/40 hover:bg-[#1A1918]/5'
                 }`}>
                 <Bookmark size={15} />
               </Link>
