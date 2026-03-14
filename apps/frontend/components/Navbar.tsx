@@ -4,12 +4,14 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Handshake, Bookmark, User, LogOut, Settings } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
+import api from '@/lib/api';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const path = usePathname();
   const [dropOpen, setDropOpen] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
+  const [pendingCount, setPendingCount] = useState(0);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -18,6 +20,15 @@ export default function Navbar() {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    api.get('/inquiries/received')
+      .then(({ data }) => {
+        setPendingCount(data.filter((i: { status: string }) => i.status === 'pending').length);
+      })
+      .catch(() => {});
+  }, [user, path]); // path 변경 시(connect 페이지 방문 후) 재조회
 
   const navLink = (href: string, label: string) => {
     const active = path === href || (href !== '/' && path.startsWith(href));
@@ -54,12 +65,17 @@ export default function Navbar() {
               {/* Connect icon btn */}
               <Link href="/connect"
                 title="Connect — 사업 문의"
-                className={`w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-150 ${
+                className={`relative w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-150 ${
                   path === '/connect'
                     ? 'bg-[#1A1918] text-white border-[#1A1918]'
                     : 'bg-card border-border text-text-secondary hover:text-text-primary hover:border-[#1A1918]/40 hover:bg-[#1A1918]/5'
                 }`}>
                 <Handshake size={15} />
+                {pendingCount > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center px-0.5 leading-none">
+                    {pendingCount > 9 ? '9+' : pendingCount}
+                  </span>
+                )}
               </Link>
 
               {/* Bookmark icon btn */}
