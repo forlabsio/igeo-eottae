@@ -107,7 +107,7 @@ export default async function HomePage() {
           <div className="mt-8 bg-[#1A1918] rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
               <p className="text-white font-bold text-[15px]">내 서비스도 여기에 올리고 싶다면?</p>
-              <p className="text-white/50 text-[13px] mt-0.5">무료로 등록하고 커뮤니티에게 소개하세요</p>
+              <p className="text-white/50 text-[13px] mt-0.5">등록하고, Connect로 파트너를 찾아보세요</p>
             </div>
             <Link href="/services/new"
               className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-[13.5px] font-semibold bg-accent-green text-black hover:bg-accent-green/90 transition-all whitespace-nowrap flex-shrink-0">
