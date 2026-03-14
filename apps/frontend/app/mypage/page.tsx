@@ -5,6 +5,7 @@ import ServiceCard from '@/components/ServiceCard';
 import api from '@/lib/api';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Pencil, Trash2 } from 'lucide-react';
 
 interface ServiceItem {
   id: string; name: string; description: string; url: string; imageUrl?: string;
@@ -72,7 +73,30 @@ export default function MyPage() {
 
       {/* Content */}
       <div className="flex flex-col gap-2.5">
-        {items.map((s) => <ServiceCard key={s.id} service={s} />)}
+        {items.map((s) => (
+          <div key={s.id} className="relative group/item">
+            <ServiceCard service={s} />
+            {tab === '내 서비스' && (
+              <div className="absolute top-3 right-3 flex items-center gap-1.5 opacity-0 group-hover/item:opacity-100 transition-opacity z-10">
+                <Link href={`/services/${s.id}/edit`}
+                  className="w-8 h-8 rounded-xl flex items-center justify-center bg-card border border-border text-text-secondary hover:bg-[#1A1918] hover:border-[#1A1918] hover:text-white transition-all shadow-sm"
+                  title="수정">
+                  <Pencil size={13} />
+                </Link>
+                <button
+                  onClick={async () => {
+                    if (!confirm(`"${s.name}" 서비스를 삭제하시겠습니까?`)) return;
+                    await api.delete(`/services/${s.id}`);
+                    setItems((prev) => prev.filter((x) => x.id !== s.id));
+                  }}
+                  className="w-8 h-8 rounded-xl flex items-center justify-center bg-card border border-border text-text-secondary hover:bg-[#F5D4D4] hover:border-[#D43B3B] hover:text-[#D43B3B] transition-all shadow-sm"
+                  title="삭제">
+                  <Trash2 size={13} />
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
         {items.length === 0 && (
           <div className="bg-card border border-border rounded-2xl py-14 text-center">
             <p className="text-[32px] mb-2">📭</p>

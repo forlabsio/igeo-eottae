@@ -1,19 +1,23 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LikeButton from '@/components/LikeButton';
 import api from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
+import { Pencil, Trash2 } from 'lucide-react';
 
 interface ServiceDetail {
   id: string; name: string; description: string; url: string; imageUrl?: string;
-  likeCount: number; categoryName?: string; userNickname?: string;
+  likeCount: number; categoryName?: string; userNickname?: string; userId?: string;
   isLiked?: boolean; isBookmarked?: boolean; createdAt: string;
 }
 
 export default function ServiceDetailPage() {
   const params = useParams();
   const id = params?.id as string;
+  const router = useRouter();
+  const { user } = useAuth();
   const [service, setService] = useState<ServiceDetail | null>(null);
   const [bookmarked, setBookmarked] = useState(false);
 
@@ -31,6 +35,12 @@ export default function ServiceDetailPage() {
     } catch {
       window.location.href = '/login';
     }
+  };
+
+  const handleDelete = async () => {
+    if (!service || !confirm(`"${service.name}" 서비스를 삭제하시겠습니까?`)) return;
+    await api.delete(`/services/${id}`);
+    router.push('/mypage');
   };
 
   if (!service) {
@@ -87,14 +97,27 @@ export default function ServiceDetailPage() {
         {/* Actions */}
         <div className="px-8 py-6 bg-bg border-t border-border flex items-center gap-3 flex-wrap">
           <LikeButton serviceId={service.id} count={service.likeCount} isLiked={service.isLiked} size="lg" />
-          <button onClick={toggleBookmark}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-[14px] font-semibold border transition-all duration-150 ${
-              bookmarked
-                ? 'bg-[#1A1918] text-white border-[#1A1918]'
-                : 'bg-card border-border text-text-secondary hover:border-text-secondary hover:text-text-primary'
-            }`}>
-            {bookmarked ? '★ 관심 등록됨' : '☆ 관심 등록'}
-          </button>
+          {user?.id === service.userId ? (
+            <>
+              <Link href={`/services/${service.id}/edit`}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-[14px] font-semibold border border-border bg-card text-text-secondary hover:bg-[#1A1918] hover:border-[#1A1918] hover:text-white transition-all duration-150">
+                <Pencil size={14} /> 수정
+              </Link>
+              <button onClick={handleDelete}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-[14px] font-semibold border border-border bg-card text-text-secondary hover:bg-[#F5D4D4] hover:border-[#D43B3B] hover:text-[#D43B3B] transition-all duration-150">
+                <Trash2 size={14} /> 삭제
+              </button>
+            </>
+          ) : (
+            <button onClick={toggleBookmark}
+              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-[14px] font-semibold border transition-all duration-150 ${
+                bookmarked
+                  ? 'bg-[#1A1918] text-white border-[#1A1918]'
+                  : 'bg-card border-border text-text-secondary hover:border-text-secondary hover:text-text-primary'
+              }`}>
+              {bookmarked ? '★ 관심 등록됨' : '☆ 관심 등록'}
+            </button>
+          )}
           <a href={service.url} target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-[14px] font-semibold bg-accent-green text-black border border-accent-green hover:bg-[#c8ff57] transition-all duration-150 ml-auto">
             사이트 방문 ↗
