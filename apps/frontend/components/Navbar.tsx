@@ -2,11 +2,22 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Handshake } from 'lucide-react';
+import { Handshake, Bookmark, User, LogOut, Settings } from 'lucide-react';
+import { useRef, useState, useEffect } from 'react';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const path = usePathname();
+  const [dropOpen, setDropOpen] = useState(false);
+  const dropRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropRef.current && !dropRef.current.contains(e.target as Node)) setDropOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const navLink = (href: string, label: string) => {
     const active = path === href || (href !== '/' && path.startsWith(href));
@@ -23,45 +34,81 @@ export default function Navbar() {
   return (
     <nav className="bg-card/90 backdrop-blur-md border-b border-border sticky top-0 z-50 h-[58px] flex items-center">
       <div className="max-w-[1120px] w-full mx-auto px-8 flex items-center">
-        {/* Logo - flex-1 so it takes equal space as right section */}
+        {/* Logo */}
         <div className="flex-1">
           <Link href="/" className="text-[17px] font-bold tracking-tight text-text-primary">
             BuildBoard
           </Link>
         </div>
 
-        {/* Center nav - truly centered */}
+        {/* Center nav */}
         <div className="flex items-center gap-1 bg-bg rounded-xl p-1 border border-border">
           {navLink('/', '홈')}
           {navLink('/services', '서비스 탐색')}
         </div>
 
-        {/* Right - flex-1 with justify-end */}
-        <div className="flex-1 flex items-center justify-end gap-2.5">
+        {/* Right */}
+        <div className="flex-1 flex items-center justify-end gap-1.5">
           {user ? (
             <>
+              {/* Connect icon btn */}
               <Link href="/connect"
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[13px] font-medium transition-all ${
-                  path === '/connect' ? 'bg-[#E8F5D4] text-[#5c7a00]' : 'text-text-secondary hover:text-text-primary hover:bg-border/60'
+                title="Connect — 사업 문의"
+                className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-150 ${
+                  path === '/connect'
+                    ? 'bg-[#E8F5D4] text-[#5c7a00]'
+                    : 'text-text-secondary hover:text-text-primary hover:bg-border/60'
                 }`}>
-                <Handshake size={14} /> Connect
+                <Handshake size={16} />
               </Link>
+
+              {/* Bookmark icon btn */}
               <Link href="/bookmarks"
-                className={`px-3.5 py-1.5 rounded-lg text-[13px] font-medium transition-all ${
-                  path === '/bookmarks' ? 'bg-accent-green text-black' : 'text-text-secondary hover:text-text-primary hover:bg-border/60'
+                title="관심목록"
+                className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-150 ${
+                  path === '/bookmarks'
+                    ? 'bg-accent-green text-black'
+                    : 'text-text-secondary hover:text-text-primary hover:bg-border/60'
                 }`}>
-                ☆ 관심목록
+                <Bookmark size={15} />
               </Link>
-              <Link href="/mypage" className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-border/60 transition-all">
-                <div className="w-7 h-7 bg-accent-green rounded-full flex items-center justify-center text-xs font-bold text-black flex-shrink-0">
-                  {user.nickname[0].toUpperCase()}
-                </div>
-                <span className="text-[13.5px] font-medium text-text-primary">{user.nickname}</span>
-              </Link>
-              <button onClick={logout}
-                className="px-3.5 py-1.5 rounded-lg text-[13px] text-text-secondary hover:text-text-primary hover:bg-border/60 transition-all">
-                로그아웃
-              </button>
+
+              {/* Avatar dropdown */}
+              <div className="relative ml-1" ref={dropRef}>
+                <button
+                  onClick={() => setDropOpen((v) => !v)}
+                  className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-xl hover:bg-border/60 transition-all duration-150">
+                  <div className="w-7 h-7 bg-accent-green rounded-full flex items-center justify-center text-[11px] font-black text-black flex-shrink-0">
+                    {user.nickname[0].toUpperCase()}
+                  </div>
+                  <span className="text-[13px] font-semibold text-text-primary">{user.nickname}</span>
+                </button>
+
+                {dropOpen && (
+                  <div className="absolute right-0 top-[calc(100%+6px)] w-[180px] bg-card border border-border rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] py-1.5 z-50">
+                    <div className="px-4 py-2 border-b border-border mb-1">
+                      <p className="text-[11px] text-text-secondary/60 font-medium">로그인 계정</p>
+                      <p className="text-[13px] font-bold text-text-primary truncate">@{user.nickname}</p>
+                    </div>
+                    <Link href="/mypage" onClick={() => setDropOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-[13px] text-text-secondary hover:text-text-primary hover:bg-bg transition-all rounded-xl mx-1">
+                      <User size={13} /> 마이페이지
+                    </Link>
+                    {user.role === 'admin' && (
+                      <Link href="/admin" onClick={() => setDropOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-[13px] text-text-secondary hover:text-text-primary hover:bg-bg transition-all rounded-xl mx-1">
+                        <Settings size={13} /> 관리자
+                      </Link>
+                    )}
+                    <div className="border-t border-border mt-1 pt-1 mx-1">
+                      <button onClick={() => { setDropOpen(false); logout(); }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-text-secondary hover:text-danger hover:bg-danger/5 transition-all rounded-xl">
+                        <LogOut size={13} /> 로그아웃
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </>
           ) : (
             <>
