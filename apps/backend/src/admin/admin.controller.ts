@@ -33,13 +33,14 @@ export class AdminController {
   }
 
   @Get('users')
-  getUsers(@Query('page') page = 1, @Query('limit') limit = 20) {
-    return this.userRepo.findAndCount({
+  async getUsers(@Query('page') page = 1, @Query('limit') limit = 20) {
+    const [data, total] = await this.userRepo.findAndCount({
       order: { createdAt: 'DESC' },
       skip: (Number(page) - 1) * Number(limit),
       take: Number(limit),
       select: ['id', 'email', 'nickname', 'role', 'isBlocked', 'createdAt'],
     });
+    return { data, total };
   }
 
   @Patch('users/:id/block')
@@ -55,13 +56,14 @@ export class AdminController {
   }
 
   @Get('services')
-  getServices(@Query('page') page = 1, @Query('limit') limit = 20) {
-    return this.serviceRepo.findAndCount({
+  async getServices(@Query('page') page = 1, @Query('limit') limit = 20) {
+    const [data, total] = await this.serviceRepo.findAndCount({
       relations: ['user', 'category'],
       order: { createdAt: 'DESC' },
       skip: (Number(page) - 1) * Number(limit),
       take: Number(limit),
     });
+    return { data, total };
   }
 
   @Patch('services/:id/hide')
@@ -77,13 +79,14 @@ export class AdminController {
   }
 
   @Get('inquiries')
-  getInquiries(@Query('page') page = 1, @Query('limit') limit = 30) {
-    return this.inquiryRepo.findAndCount({
+  async getInquiries(@Query('page') page = 1, @Query('limit') limit = 30) {
+    const [data, total] = await this.inquiryRepo.findAndCount({
       relations: ['sender', 'receiver', 'service'],
       order: { createdAt: 'DESC' },
       skip: (Number(page) - 1) * Number(limit),
       take: Number(limit),
     });
+    return { data, total };
   }
 
   @Delete('inquiries/:id')

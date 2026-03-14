@@ -64,7 +64,9 @@ export class ServicesService {
 
   async create(dto: CreateServiceDto, userId: string) {
     const s = this.serviceRepo.create({ ...dto, userId });
-    return this.serviceRepo.save(s);
+    const saved = await this.serviceRepo.save(s);
+    const full = await this.serviceRepo.findOne({ where: { id: saved.id }, relations: ['user', 'category'] });
+    return this.toDto(full!, false, false);
   }
 
   async update(id: string, dto: Partial<CreateServiceDto>, userId: string, role: string) {
@@ -72,7 +74,9 @@ export class ServicesService {
     if (!s) throw new NotFoundException();
     if (s.userId !== userId && role !== 'admin') throw new ForbiddenException();
     Object.assign(s, dto);
-    return this.serviceRepo.save(s);
+    await this.serviceRepo.save(s);
+    const full = await this.serviceRepo.findOne({ where: { id }, relations: ['user', 'category'] });
+    return this.toDto(full!, false, false);
   }
 
   async remove(id: string, userId: string, role: string) {
@@ -80,6 +84,7 @@ export class ServicesService {
     if (!s) throw new NotFoundException();
     if (s.userId !== userId && role !== 'admin') throw new ForbiddenException();
     await this.serviceRepo.remove(s);
+    return { success: true };
   }
 
   async toggleLike(serviceId: string, userId: string) {

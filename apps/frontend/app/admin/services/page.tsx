@@ -32,7 +32,7 @@ export default function AdminServicesPage() {
     setError(null);
     try {
       const { data } = await api.get('/admin/services');
-      setServices(data[0]);
+      setServices(data.data);
     } catch {
       setError('서비스 목록을 불러오는데 실패했습니다.');
     } finally {

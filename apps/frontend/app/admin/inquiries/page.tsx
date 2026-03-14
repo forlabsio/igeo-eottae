@@ -39,7 +39,7 @@ export default function AdminInquiriesPage() {
     try {
       const { data } = await api.get('/admin/inquiries');
       // findAndCount returns [array, count]
-      setItems(Array.isArray(data[0]) ? data[0] : data);
+      setItems(data.data);
     } finally {
       setFetching(false);
     }

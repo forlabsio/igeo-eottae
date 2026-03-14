@@ -30,7 +30,7 @@ export default function AdminUsersPage() {
     setError(null);
     try {
       const { data } = await api.get('/admin/users');
-      setUsers(data[0]);
+      setUsers(data.data);
     } catch {
       setError('회원 목록을 불러오는데 실패했습니다.');
     } finally {
