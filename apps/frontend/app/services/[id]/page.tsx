@@ -5,7 +5,7 @@ import Link from 'next/link';
 import LikeButton from '@/components/LikeButton';
 import api from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
-import { Handshake, Pencil, Trash2, Send } from 'lucide-react';
+import { Handshake, Pencil, Trash2, Send, Bookmark, BookmarkCheck } from 'lucide-react';
 
 interface ServiceDetail {
   id: string; name: string; description: string; url: string; imageUrl?: string;
@@ -156,7 +156,8 @@ export default function ServiceDetailPage() {
                     ? 'bg-[#1A1918] text-white border-[#1A1918]'
                     : 'bg-card border-border text-text-secondary hover:border-text-secondary hover:text-text-primary'
                 }`}>
-                {bookmarked ? '★ 관심 등록됨' : '☆ 관심 등록'}
+                {bookmarked ? <BookmarkCheck size={15} /> : <Bookmark size={15} />}
+                {bookmarked ? '저장됨' : '저장'}
               </button>
               <button onClick={() => {
                 if (!user) { router.push('/register?reason=connect'); return; }
