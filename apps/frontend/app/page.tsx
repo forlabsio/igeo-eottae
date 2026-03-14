@@ -34,7 +34,7 @@ export default async function HomePage() {
         <div className="max-w-[1120px] mx-auto px-8 py-16 relative">
           <div className="flex flex-col gap-5 max-w-[560px]">
               <span className="inline-flex items-center gap-1.5 bg-accent-green text-black text-[11px] font-extrabold px-3 py-1.5 rounded-full tracking-widest w-fit">
-                <Zap size={11} /> KOREAN MAKERS PLATFORM
+                <Zap size={11} /> MAKERS PLATFORM
               </span>
               <h1 className="text-[48px] font-extrabold text-text-primary leading-[1.08] tracking-tight">
                 당신의 서비스를<br />
@@ -44,8 +44,8 @@ export default async function HomePage() {
                 </span>
               </h1>
               <p className="text-[15px] text-text-secondary leading-relaxed">
-                직접 만든 서비스와 사업 아이디어를 등록하고,<br />
-                커뮤니티의 피드백과 관심을 받아보세요.
+                서비스를 등록하고 발견하세요. 마음에 드는 팀에<br />
+                Connect로 사업 문의를 보내고 협업 기회를 찾으세요.
               </p>
               <div className="flex gap-3 mt-1">
                 <Link href="/services/new"
