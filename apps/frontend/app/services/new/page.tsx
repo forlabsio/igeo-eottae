@@ -61,8 +61,12 @@ export default function NewServicePage() {
             </div>
             <div>
               <label className="text-sm font-semibold mb-2 block">서비스 링크 *</label>
-              <input type="url" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })}
-                className="w-full border border-border rounded px-3.5 py-3 text-sm bg-bg" placeholder="https://" required />
+              <input type="text" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })}
+                onBlur={(e) => {
+                  const v = e.target.value.trim();
+                  if (v && !v.match(/^https?:\/\//)) setForm((f) => ({ ...f, url: `https://${v}` }));
+                }}
+                className="w-full border border-border rounded px-3.5 py-3 text-sm bg-bg" placeholder="example.com" required />
             </div>
             <div>
               <label className="text-sm font-semibold mb-2 block">대표 이미지 URL (선택)</label>

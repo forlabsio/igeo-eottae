@@ -25,7 +25,9 @@ export class ServicesService {
     if (category) qb.andWhere('cat.slug = :category', { category });
     if (search) qb.andWhere('(s.name ILIKE :q OR s.description ILIKE :q)', { q: `%${search}%` });
 
-    qb.orderBy(sort === 'likes' ? 's.likeCount' : 's.createdAt', 'DESC');
+    if (sort === 'likes') qb.orderBy('s.likeCount', 'DESC');
+    else if (sort === 'name') qb.orderBy('s.name', 'ASC');
+    else qb.orderBy('s.createdAt', 'DESC');
     qb.skip((page - 1) * limit).take(limit);
 
     const [data, total] = await qb.getManyAndCount();

@@ -14,8 +14,8 @@ export class QueryServiceDto {
   limit?: number = 12;
 
   @IsOptional()
-  @IsIn(['likes', 'latest'])
-  sort?: 'likes' | 'latest' = 'likes';
+  @IsIn(['likes', 'latest', 'name'])
+  sort?: 'likes' | 'latest' | 'name' = 'likes';
 
   @IsOptional()
   @IsString()

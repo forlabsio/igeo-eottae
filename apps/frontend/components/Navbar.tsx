@@ -15,6 +15,7 @@ export default function Navbar() {
       <div className="flex items-center gap-3">
         {user ? (
           <>
+            <Link href="/bookmarks" className="text-sm text-text-secondary hover:text-black">☆ 관심목록</Link>
             <Link href="/mypage" className="flex items-center gap-2">
               <div className="w-8 h-8 bg-accent-green rounded-full flex items-center justify-center text-xs font-bold">
                 {user.nickname[0].toUpperCase()}
