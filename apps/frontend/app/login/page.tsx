@@ -33,7 +33,7 @@ export default function LoginPage() {
       <div className="w-full max-w-[420px]">
         <div className="text-center mb-8">
           <span className="inline-flex items-center gap-1.5 bg-accent-green text-black text-[12px] font-bold px-3 py-1 rounded-full">
-            ✦ 이거 어때
+            ✦ BuildBoard
           </span>
           <h1 className="text-[26px] font-extrabold text-text-primary mt-4 tracking-tight">다시 만나서 반가워요</h1>
           <p className="text-[14px] text-text-secondary mt-1.5">계정에 로그인하여 서비스를 탐색하세요.</p>

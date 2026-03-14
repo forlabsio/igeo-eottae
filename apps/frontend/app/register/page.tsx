@@ -34,7 +34,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-[420px]">
         <div className="text-center mb-8">
           <span className="inline-flex items-center gap-1.5 bg-accent-green text-black text-[12px] font-bold px-3 py-1 rounded-full">
-            ✦ 이거 어때
+            ✦ BuildBoard
           </span>
           <h1 className="text-[26px] font-extrabold text-text-primary mt-4 tracking-tight">새 계정 만들기</h1>
           <p className="text-[14px] text-text-secondary mt-1.5">서비스를 등록하고 커뮤니티와 공유하세요.</p>

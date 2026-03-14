@@ -4,7 +4,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import Navbar from '@/components/Navbar';
 
 export const metadata: Metadata = {
-  title: '이거 어때 - 한국 메이커 서비스 디렉토리',
+  title: 'BuildBoard - 한국 메이커 서비스 디렉토리',
   description: '한국 메이커들이 만든 서비스를 발견하고 좋아요를 누르세요',
 };
 
